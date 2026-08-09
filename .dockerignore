@@ -1,0 +1,16 @@
+.git
+.github
+.wrangler
+.dev.vars
+.dev.vars.*
+**/.dev.vars
+**/.dev.vars.*
+.env
+.env.*
+**/.env
+**/.env.*
+node_modules
+**/node_modules
+**/dist
+coverage
+release-out

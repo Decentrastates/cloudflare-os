@@ -1,0 +1,17 @@
+{
+  "name": "dev-router",
+  "main": "packages/router/src/index.ts",
+  "compatibility_date": "2025-11-01",
+  "compatibility_flags": ["enable_ctx_exports"],
+  "dev": {
+    "ip": "0.0.0.0",
+    "port": 8787,
+    "local_protocol": "http"
+  },
+  "services": [
+    {
+      "binding": "WORKSHOP_BACKEND",
+      "service": "workshop-backend"
+    }
+  ]
+}

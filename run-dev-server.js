@@ -90,6 +90,8 @@ const CONTEXT_GATEKEEPER_NAME = "gatekeeper-context";
 // reload; wrangler dev's `watch_dir: src` then re-bundles the worker.
 const devWatchers = [];
 let stoppingDevWatchers = false;
+const enableDevWatchers = !serveFrontendAssets &&
+    process.env.CLOUDFLARE_OS_DISABLE_WATCHERS !== "true";
 
 // Spawn a persistent watcher.
 function spawnDevWatcher(label, command, args) {
@@ -106,18 +108,22 @@ for (const gk of gatekeepers) {
   if (existsSync(join(gk.dir, "src", "configurator"))) {
     const script = join(ROOT, "scripts", "build-gatekeeper-configurator.mjs");
     execFileSync(process.execPath, [script, gk.dir, "--quiet"], { stdio: "inherit", cwd: ROOT });
-    spawnDevWatcher(
-      `configurator UI watcher for ${gk.name}`,
-      process.execPath,
-      [script, gk.dir, "--watch", "--quiet"],
-    );
+    if (enableDevWatchers) {
+      spawnDevWatcher(
+        `configurator UI watcher for ${gk.name}`,
+        process.execPath,
+        [script, gk.dir, "--watch", "--quiet"],
+      );
+    }
   }
 
   // Single-file app UI (Vite bundle written to src/generated/app.txt by build-app.mjs).
   if (existsSync(join(gk.dir, "build-app.mjs"))) {
     const script = join(gk.dir, "build-app.mjs");
     execFileSync(process.execPath, [script], { stdio: "inherit", cwd: gk.dir });
-    spawnDevWatcher(`app UI watcher for ${gk.name}`, process.execPath, [script, "--watch"]);
+    if (enableDevWatchers) {
+      spawnDevWatcher(`app UI watcher for ${gk.name}`, process.execPath, [script, "--watch"]);
+    }
   }
 }
 

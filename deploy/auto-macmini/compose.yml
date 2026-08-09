@@ -1,0 +1,32 @@
+services:
+  cloudflare-os:
+    build:
+      context: ../..
+      dockerfile: deploy/auto-macmini/Dockerfile
+    image: cloudflare-os-local:latest
+    container_name: cloudflare-os
+    restart: unless-stopped
+    init: true
+    environment:
+      CLOUDFLARE_OS_DISABLE_WATCHERS: "true"
+      HOME: /home/node
+    ports:
+      - "8787:8787"
+    volumes:
+      - cloudflare_os_data:/app/.wrangler
+    mem_limit: 5g
+    cpus: 6.0
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:8787/').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 90s
+
+volumes:
+  cloudflare_os_data:
+    name: cloudflare-os-data
