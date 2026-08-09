@@ -236,9 +236,24 @@ for (const gk of gatekeepers) {
 
   config.services = config.services || [];
 
-  // For local testing, create an account named "admin" to test admin features.
+  // Local development defaults to an `admin` account. Self-hosted deployments must override this
+  // with a JSON array in CLOUDFLARE_OS_ADMINS so a predictable public username is never privileged.
   config.vars = config.vars || {};
-  config.vars.ADMINS = ["admin"];
+  const configuredAdmins = process.env.CLOUDFLARE_OS_ADMINS;
+  if (configuredAdmins === undefined) {
+    config.vars.ADMINS = ["admin"];
+  } else {
+    let admins;
+    try {
+      admins = JSON.parse(configuredAdmins);
+    } catch {
+      throw new Error("CLOUDFLARE_OS_ADMINS must be a JSON array of usernames.");
+    }
+    if (!Array.isArray(admins) || admins.some(name => typeof name !== "string" || !name)) {
+      throw new Error("CLOUDFLARE_OS_ADMINS must be a JSON array of non-empty usernames.");
+    }
+    config.vars.ADMINS = admins;
+  }
 
   // Pass through the optional OAuth sign-in / AI Gateway billing env vars from the shell
   // environment, so you can run e.g.
