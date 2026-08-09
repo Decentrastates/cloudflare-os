@@ -46,7 +46,7 @@ try {
   if (!adminApi) throw new Error("Admin capability was not returned.");
   await adminApi.setSignupsEnabled(false);
 
-  const config = await publicApi.getServerConfig("en");
+  const config = await publicApi.getServerConfig();
   if (config.signupsEnabled) throw new Error("New-account registration is still enabled.");
   console.log("Bootstrap administrator verified; public sign-ups are closed.");
 } finally {
