@@ -13,6 +13,7 @@ import {
   slashCommandTokenKey, type ParsedSlashCommandInput,
 } from "./slash-command-input";
 import { loadSlashCommandCatalog, slashCommandKey } from "./slash-command-catalog";
+import { t } from '../../i18n/core'
 
 type SlashCommandPopupLayout = {
   left: number;
@@ -229,17 +230,17 @@ export function useSlashCommandPicker({
         maxHeight: layout.maxHeight,
       }}
     >
-      <p className={`m-0 shrink-0 px-3.5 pb-1 pt-2.5 ${PICKER_CAPTION}`}>Commands</p>
+      <p className={`m-0 shrink-0 px-3.5 pb-1 pt-2.5 ${PICKER_CAPTION}`}>{t("Commands")}</p>
       <div
         ref={listRef}
         id={listboxId}
         role="listbox"
-        aria-label="Slash commands"
+        aria-label={t("Slash commands")}
         aria-busy={loading}
         className="sidebar-scroll min-h-0 flex-1 overflow-y-auto"
       >
         {loading && choices.length === 0 ? (
-          <p className={PICKER_EMPTY}>Loading commands…</p>
+          <p className={PICKER_EMPTY}>{t("Loading commands…")}</p>
         ) : choices.length > 0 ? (
           choices.map((choice, optionIndex) => (
             <button
@@ -272,10 +273,10 @@ export function useSlashCommandPicker({
         ) : (
           <p className={PICKER_EMPTY}>
             {error
-              ? `Couldn’t load commands. ${error}`
+              ? t('Couldn’t load commands. {{error}}', { error })
               : query
-                ? "No commands match your search."
-                : "No commands are available."}
+                ? t("No commands match your search.")
+                : t("No commands are available.")}
           </p>
         )}
       </div>

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Check, Plus, UserCircle } from '@phosphor-icons/react'
 import { AccountDescription, SupportedResource, VendorDescription } from '@gadgets/workshop-shared/gatekeeper'
+import { t } from '../i18n/core'
 
 // Account info as consumed by the chooser. Matches the shape used by GatekeeperModal and the
 // blueprint configure panel.
@@ -60,11 +61,14 @@ export function AccountChooser({
   return (
     <section className="overflow-hidden rounded-xl border border-kumo-line bg-kumo-base">
       <div className="border-b border-kumo-line px-3 py-2.5">
-        <p className="text-[12px] leading-4 font-medium tracking-[-0.2px] text-kumo-default">Account</p>
+        <p className="text-[12px] leading-4 font-medium tracking-[-0.2px] text-kumo-default">{t("Account")}</p>
         <p className="mt-0.5 text-[12px] leading-4 font-normal tracking-[-0.2px] text-kumo-subtle">
           {isEmailMailbox
-            ? 'Enable the Email receiver account, then choose the mailbox name below.'
-            : `Pick which ${vendorName} identity this ${resourceTitle ?? 'connection'} should use.`}
+            ? t("Enable the Email receiver account, then choose the mailbox name below.")
+            : t('Pick which {{vendor}} identity this {{resource}} should use.', {
+                vendor: vendorName,
+                resource: resourceTitle ?? t('connection'),
+              })}
         </p>
       </div>
       <div className="divide-y divide-kumo-line">
@@ -104,10 +108,10 @@ export function AccountChooser({
                   <p className="truncate text-[13px] leading-[18px] font-medium tracking-[-0.25px] text-kumo-default">{name}</p>
                   <p className={`truncate text-[12px] leading-4 font-normal tracking-[-0.2px] ${needsAccess ? 'text-kumo-brand' : 'text-kumo-subtle'}`}>
                     {expired
-                      ? 'Expired credentials'
+                      ? t("Expired credentials")
                       : needsAccess
-                      ? 'Additional permission needed'
-                      : resourceTitle ? `Connected ${vendorName} account` : 'Connected'}
+                      ? t("Additional permission needed")
+                      : resourceTitle ? t('Connected {{vendor}} account', { vendor: vendorName }) : t("Connected")}
                   </p>
                 </div>
               </button>
@@ -118,7 +122,7 @@ export function AccountChooser({
                   disabled={reconnecting}
                   className="shrink-0 cursor-pointer rounded-md border border-kumo-line px-2 py-1 text-[12px] leading-4 font-medium tracking-[-0.2px] text-kumo-default transition-colors hover:bg-kumo-elevated disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {reconnecting ? 'Opening...' : 'Reconnect'}
+                  {reconnecting ? t("Opening...") : t("Reconnect")}
                 </button>
               ) : needsAccess ? (
                 <button
@@ -127,7 +131,7 @@ export function AccountChooser({
                   disabled={granting}
                   className="shrink-0 cursor-pointer rounded-md border border-kumo-line px-2 py-1 text-[12px] leading-4 font-medium tracking-[-0.2px] text-kumo-default transition-colors hover:bg-kumo-elevated disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {granting ? 'Opening...' : 'Grant access'}
+                  {granting ? t("Opening...") : t("Grant access")}
                 </button>
               ) : null}
               {selected && <Check size={15} weight="bold" className="shrink-0 text-kumo-brand" />}
@@ -148,8 +152,10 @@ export function AccountChooser({
               <Plus size={14} />
             )}
             {isEmailMailbox
-              ? 'Enable Email mailboxes'
-              : accounts.length === 0 ? `Connect ${vendorName}` : `Use another ${vendorName} account`}
+              ? t("Enable Email mailboxes")
+              : accounts.length === 0
+                ? t('Connect {{vendor}}', { vendor: vendorName })
+                : t('Use another {{vendor}} account', { vendor: vendorName })}
           </button>
         )}
       </div>

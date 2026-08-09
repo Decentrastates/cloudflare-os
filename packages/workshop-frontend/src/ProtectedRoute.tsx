@@ -5,6 +5,7 @@ import { useAuth, CF_ACCESS_MODE } from './useAuth'
 import { AuthProvider } from './AuthContext'
 import LoginPage from './LoginPage'
 import { Loader, Banner, Button } from '@cloudflare/kumo'
+import { t } from './i18n/core'
 
 interface ProtectedRouteProps {
   children: ReactNode
@@ -36,8 +37,7 @@ export default function ProtectedRoute({ children, rpcStub }: ProtectedRouteProp
       >
         <Loader size="lg" />
         <div style={{ textAlign: 'center' }}>
-          Loading...
-        </div>
+          {t("Loading...")}</div>
       </div>
     )
   }
@@ -57,12 +57,11 @@ export default function ProtectedRoute({ children, rpcStub }: ProtectedRouteProp
       >
         <Banner
           variant="error"
-          title={`Authentication error: ${error}`}
+          title={t('Authentication error: {{error}}', { error })}
           className="mb-4"
         />
         <Button variant="primary" onClick={() => window.location.reload()}>
-          Retry
-        </Button>
+          {t("Retry")}</Button>
       </div>
     )
   }
@@ -85,8 +84,7 @@ export default function ProtectedRoute({ children, rpcStub }: ProtectedRouteProp
         >
           <Loader size="lg" />
           <div style={{ textAlign: 'center' }}>
-            Authenticating...
-          </div>
+            {t("Authenticating...")}</div>
         </div>
       )
     }

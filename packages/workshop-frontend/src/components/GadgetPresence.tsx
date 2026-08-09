@@ -3,6 +3,7 @@ import { Popover, Tooltip } from '@cloudflare/kumo'
 import { RpcStub, RpcTarget } from 'capnweb'
 import { Overseer, AuthenticatedApi, PresenceParticipant, PresenceSubscriber } from '@gadgets/workshop-shared/api'
 import { PersonAvatar } from './PersonAvatar'
+import { t } from '../i18n/core'
 
 const MAX_VISIBLE = 3
 
@@ -183,7 +184,9 @@ export function GadgetPresence({
   const overflow = display.length - visible.length
   const count = display.length
   const label = `${count} ${count === 1 ? 'person' : 'people'} here now`
-  const ariaLabel = `${count} ${count === 1 ? 'person' : 'people'} viewing this workspace`
+  const ariaLabel = count === 1
+    ? t('{{count}} person viewing this workspace', { count })
+    : t('{{count}} people viewing this workspace', { count })
 
   return (
     <Popover>
@@ -196,7 +199,7 @@ export function GadgetPresence({
           >
             <span ref={stackRef} className="relative flex -space-x-2">
               {visible.map((p) => (
-                <Tooltip key={p.user.id} content={`${p.user.name} · ${ROLE_LABELS[p.role]}`} asChild>
+                <Tooltip key={p.user.id} content={t('{{name}} · {{role}}', { name: p.user.name, role: t(ROLE_LABELS[p.role]) })} asChild>
                   {/* Outer span = FLIP target (translateX slide). Inner span = scale/opacity pop.
                       Kept on separate elements so the two transforms don't overwrite each other. */}
                   <span data-flip-id={p.user.id} className="inline-flex cursor-pointer">

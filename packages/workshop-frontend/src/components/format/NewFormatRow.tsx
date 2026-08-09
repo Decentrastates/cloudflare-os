@@ -3,6 +3,7 @@
 
 import { FormatGlyph } from './FormatVisuals'
 import { useOutputFormats } from './useOutputFormats'
+import { t } from '../../i18n/core'
 
 export default function NewFormatRow({ label = 'Start with' }: { label?: string }) {
   const { formats, creating, create } = useOutputFormats()
@@ -29,7 +30,7 @@ export default function NewFormatRow({ label = 'Start with' }: { label?: string 
               size="md"
               className={creating === format.blueprintId ? 'animate-pulse' : 'text-kumo-subtle'}
             />
-            {creating === format.blueprintId ? `Creating…` : `New ${format.output.noun}`}
+            {creating === format.blueprintId ? t("Creating…") : t('New {{format}}', { format: format.output.noun })}
           </button>
         ))}
       </div>

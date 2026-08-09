@@ -13,8 +13,12 @@ import { buildGatekeeperVendorMap } from './auth/auth-vendors.js';
 import { UserDurableObject } from './user.js';
 import { formatBlueprintsManifestVersion, installFormatBlueprints } from './format-blueprints.js';
 import { FORMAT_BLUEPRINTS } from './generated/format-blueprints.js';
+import { translateSystemMetadata, type UiLocale } from '@gadgets/workshop-shared/i18n';
 
 const logger = createWorkshopLogger("workshop.admin.settings");
+const LOCALIZED_BUNDLED_BLUEPRINT_IDS = new Set(
+  FORMAT_BLUEPRINTS.map((format) => format.blueprintId),
+);
 
 function makeAdminSettingsStorage(storage: DurableObjectStorage) {
   return createTypedStorage(storage, {
@@ -554,12 +558,46 @@ export class AdminSettings extends DurableObject<Cloudflare.Env> {
 export class AdminApiImpl extends RpcTarget implements AdminApi {
   // `adminUserId` is the requesting admin's identity, forwarded to gatekeepers when listing the
   // resource catalog (some are RBAC-gated per user). It's plain data — not a user-DO dependency.
-  constructor(private admin: DurableObjectStub<AdminSettings>, private adminUserId: string) {
+  constructor(private admin: DurableObjectStub<AdminSettings>, private adminUserId: string,
+              private locale: UiLocale = 'en') {
     super();
   }
 
-  getSettings(): Promise<AdminSettingsView> {
-    return this.admin.getSettings(this.adminUserId);
+  async getSettings(): Promise<AdminSettingsView> {
+    let settings = await this.admin.getSettings(this.adminUserId);
+    if (this.locale === 'en') return settings;
+    return {
+      ...settings,
+      resourceVendors: settings.resourceVendors.map(vendor => ({
+        ...vendor,
+        displayName: translateSystemMetadata(this.locale, vendor.displayName),
+        ...(vendor.autoProvisions ? {} : {
+          resources: vendor.resources.map(resource => ({
+            ...resource,
+            title: translateSystemMetadata(this.locale, resource.title),
+            description: translateSystemMetadata(this.locale, resource.description),
+          })),
+        }),
+      })),
+      formats: settings.formats.map(format => {
+        if (!LOCALIZED_BUNDLED_BLUEPRINT_IDS.has(format.blueprintId)) return format;
+        return {
+          ...format,
+          blueprintTitle: translateSystemMetadata(this.locale, format.blueprintTitle),
+          blueprintDescription: translateSystemMetadata(this.locale, format.blueprintDescription),
+          output: format.output ? {
+            ...format.output,
+            noun: translateSystemMetadata(this.locale, format.output.noun),
+            plural: translateSystemMetadata(this.locale, format.output.plural),
+          } : undefined,
+          declared: format.declared ? {
+            ...format.declared,
+            noun: translateSystemMetadata(this.locale, format.declared.noun),
+            plural: translateSystemMetadata(this.locale, format.declared.plural),
+          } : undefined,
+        };
+      }),
+    };
   }
 
   async setSignupsEnabled(enabled: boolean): Promise<void> {

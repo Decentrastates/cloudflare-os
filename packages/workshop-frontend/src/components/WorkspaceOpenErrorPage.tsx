@@ -5,6 +5,7 @@ import {
   OPEN_GADGET_ERROR_CODES,
 } from '@gadgets/workshop-shared/api'
 import { WorkshopButton } from './WorkshopControls'
+import { t } from '../i18n/core'
 
 export type WorkspaceOpenFailureKind = 'access-denied' | 'not-found' | 'unexpected'
 
@@ -74,13 +75,13 @@ export default function WorkspaceOpenErrorPage({ kind, onRetry, onGoToWorkspaces
           tabIndex={-1}
           className="mt-5 text-[20px] leading-7 font-semibold tracking-[-0.35px] text-kumo-default outline-none"
         >
-          {title}
+          {t(title)}
         </h1>
         <p
           id={descriptionId}
           className="mt-2 text-[13px] leading-[18px] tracking-[-0.25px] text-kumo-subtle"
         >
-          {message}
+          {t(message)}
         </p>
         <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
           <WorkshopButton
@@ -88,12 +89,10 @@ export default function WorkspaceOpenErrorPage({ kind, onRetry, onGoToWorkspaces
             className="!h-9"
             onClick={onGoToWorkspaces}
           >
-            Go to workspaces
-          </WorkshopButton>
+            {t("Go to workspaces")}</WorkshopButton>
           {retryable && (
             <WorkshopButton tone="primary" onClick={onRetry}>
-              Try again
-            </WorkshopButton>
+              {t("Try again")}</WorkshopButton>
           )}
         </div>
       </section>

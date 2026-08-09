@@ -13,6 +13,7 @@ import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'reac
 import { DropdownMenu, useKumoToastManager } from '@cloudflare/kumo'
 import { useAuthenticatedApi } from '../AuthContext'
 import { MENU_CONTENT, MENU_ITEM, MENU_ITEM_DANGER } from './menuStyles'
+import { t } from '../i18n/core'
 
 // A unified row item, merged from the user's published blueprints (`listOwnBlueprints`) and their
 // library (`listLibraryBlueprints`). Mirrors the sidebar's SidebarBlueprintItem but adds the bits
@@ -105,13 +106,12 @@ function BlueprintRow({
           <DropdownMenu.Content className={MENU_CONTENT}>
             <DropdownMenu.Item onClick={() => onTogglePin(item)} className={MENU_ITEM}>
               <Star size={13} className="mr-2" weight={item.pinned ? 'fill' : 'regular'} />
-              {item.pinned ? 'Unfavorite' : 'Favorite'}
+              {item.pinned ? t("Unfavorite") : t("Favorite")}
             </DropdownMenu.Item>
             {item.inLibrary && (
               <DropdownMenu.Item variant="danger" onClick={() => onRemoveFromLibrary(item)} className={MENU_ITEM_DANGER}>
                 <Trash size={13} className="mr-2" />
-                Remove from library
-              </DropdownMenu.Item>
+                {t("Remove from library")}</DropdownMenu.Item>
             )}
           </DropdownMenu.Content>
         </DropdownMenu>
@@ -146,7 +146,7 @@ export default function BlueprintList() {
         const ensure = (id: string): BlueprintItem => {
           let it = map.get(id)
           if (!it) {
-            it = { id, title: 'Untitled blueprint', description: '', recency: 0, pinned: false, inLibrary: false, isOwn: false }
+            it = { id, title: t('Untitled blueprint'), description: '', recency: 0, pinned: false, inLibrary: false, isOwn: false }
             map.set(id, it)
           }
           return it
@@ -193,11 +193,11 @@ export default function BlueprintList() {
     setUploading(true)
     try {
       await authenticatedApi.importBlueprint(file.stream() as ReadableStream<Uint8Array>)
-      toasts.add({ title: 'Blueprint uploaded', variant: 'success' })
+      toasts.add({ title: t("Blueprint uploaded"), variant: 'success' })
       load()
     } catch (err) {
       console.error('Failed to upload blueprint:', err)
-      toasts.add({ title: 'Failed to upload blueprint', variant: 'error' })
+      toasts.add({ title: t("Failed to upload blueprint"), variant: 'error' })
     } finally {
       setUploading(false)
     }
@@ -211,7 +211,7 @@ export default function BlueprintList() {
     } catch (err) {
       console.error('Failed to update blueprint pin:', err)
       setItems((prev) => sortItems(prev.map((b) => (b.id === item.id ? { ...b, pinned: item.pinned } : b))))
-      toasts.add({ title: 'Failed to update favorite', variant: 'error' })
+      toasts.add({ title: t("Failed to update favorite"), variant: 'error' })
     }
   }
 
@@ -225,10 +225,10 @@ export default function BlueprintList() {
           .map((b) => (b.id === item.id ? { ...b, inLibrary: false } : b))
           .filter((b) => b.inLibrary || b.isOwn),
       )
-      toasts.add({ title: 'Removed from library', variant: 'success' })
+      toasts.add({ title: t("Removed from library"), variant: 'success' })
     } catch (err) {
       console.error('Failed to remove blueprint from library:', err)
-      toasts.add({ title: 'Failed to remove blueprint', variant: 'error' })
+      toasts.add({ title: t("Failed to remove blueprint"), variant: 'error' })
     }
   }
 
@@ -259,7 +259,7 @@ export default function BlueprintList() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search blueprints…"
+              placeholder={t("Search blueprints…")}
               className="h-9 w-full rounded-lg border border-kumo-line bg-kumo-base pl-9 pr-4 text-[13px] tracking-[-0.25px] text-kumo-default placeholder:text-kumo-inactive transition-[border-color,box-shadow] duration-150 ease-out focus:border-kumo-ring focus:outline-none focus:ring-[3px] focus:ring-kumo-ring/15"
             />
           </div>
@@ -268,17 +268,16 @@ export default function BlueprintList() {
           <div className="grid shrink-0 grid-cols-2 gap-2">
             <Link to="/explore" className={ACTION_BUTTON}>
               <Compass size={14} />
-              Explore
-            </Link>
+              {t("Explore")}</Link>
             <button
               type="button"
               onClick={() => uploadInputRef.current?.click()}
               disabled={uploading}
-              title="Upload a .gadget archive"
+              title={t("Upload a .gadget archive")}
               className={ACTION_BUTTON}
             >
               <UploadSimple size={14} weight="bold" />
-              {uploading ? 'Uploading…' : 'Upload'}
+              {uploading ? t("Uploading…") : t("Upload")}
             </button>
           </div>
         </div>
@@ -295,28 +294,26 @@ export default function BlueprintList() {
           </div>
         ) : loadError ? (
           <div className="py-12 text-center text-sm">
-            <p className="text-kumo-danger">Something went wrong loading your blueprints.</p>
-            <button type="button" onClick={load} className="mt-1 text-kumo-brand underline">Try again</button>
+            <p className="text-kumo-danger">{t("Something went wrong loading your blueprints.")}</p>
+            <button type="button" onClick={load} className="mt-1 text-kumo-brand underline">{t("Try again")}</button>
           </div>
         ) : filtered.length === 0 ? (
           search ? (
-            <div className="py-12 text-center text-sm text-kumo-inactive">No blueprints found</div>
+            <div className="py-12 text-center text-sm text-kumo-inactive">{t("No blueprints found")}</div>
           ) : (
             <div className="flex flex-col items-center gap-3 px-3 py-16 text-center">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-kumo-fill text-kumo-subtle">
                 <BlueprintIcon size={18} />
               </div>
               <div>
-                <p className="text-sm font-medium text-kumo-default">No blueprints yet</p>
+                <p className="text-sm font-medium text-kumo-default">{t("No blueprints yet")}</p>
                 <p className="mt-1 text-[13px] leading-[18px] text-kumo-subtle">
-                  Publish a workspace as a blueprint, or add one from Explore.
-                </p>
+                  {t("Publish a workspace as a blueprint, or add one from Explore.")}</p>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <Link to="/explore" className={ACTION_BUTTON}>
                   <Compass size={14} />
-                  Explore blueprints
-                </Link>
+                  {t("Explore blueprints")}</Link>
                 <button
                   type="button"
                   onClick={() => uploadInputRef.current?.click()}
@@ -324,7 +321,7 @@ export default function BlueprintList() {
                   className={ACTION_BUTTON}
                 >
                   <UploadSimple size={14} weight="bold" />
-                  {uploading ? 'Uploading…' : 'Upload .gadget'}
+                  {uploading ? t("Uploading…") : t("Upload .gadget")}
                 </button>
               </div>
             </div>

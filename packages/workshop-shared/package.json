@@ -13,6 +13,10 @@
       "types": "./src/feature-flags.ts",
       "import": "./src/feature-flags.ts"
     },
+    "./i18n": {
+      "types": "./src/i18n.ts",
+      "import": "./src/i18n.ts"
+    },
     "./gatekeeper": {
       "types": "./src/gatekeeper.ts",
       "import": "./src/gatekeeper.ts"

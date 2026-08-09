@@ -3,6 +3,7 @@ import { Dialog, Button, Input } from '@cloudflare/kumo'
 import { X } from '@phosphor-icons/react'
 import type { Connection, ConnectionResource } from '../../data/sample'
 import { logoComponents } from '../ConnectionLogos'
+import { t } from '../../i18n/core'
 
 export default function ConnectionConfigModal({
   connection,
@@ -92,8 +93,7 @@ export default function ConnectionConfigModal({
                 onClick={handleAdd}
                 disabled={!inputValue.trim()}
               >
-                Add
-              </Button>
+                {t("Add")}</Button>
             </div>
           </div>
         )}
@@ -102,8 +102,7 @@ export default function ConnectionConfigModal({
         <div className="max-h-56 overflow-y-auto px-5 pb-4">
           {resources.length === 0 ? (
             <p className="text-sm text-kumo-inactive text-center py-4">
-              No resources added yet
-            </p>
+              {t("No resources added yet")}</p>
           ) : (
             <div className="space-y-1">
               {resources.map((r) => (
@@ -131,8 +130,7 @@ export default function ConnectionConfigModal({
           <Dialog.Close
             render={(props) => (
               <Button {...props} variant="outline" size="sm">
-                Cancel
-              </Button>
+                {t("Cancel")}</Button>
             )}
           />
           <Button
@@ -143,8 +141,7 @@ export default function ConnectionConfigModal({
               onOpenChange(false)
             }}
           >
-            Save
-          </Button>
+            {t("Save")}</Button>
         </div>
       </Dialog>
     </Dialog.Root>

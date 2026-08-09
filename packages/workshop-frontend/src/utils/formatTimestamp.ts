@@ -6,17 +6,21 @@
 //
 // The formatter instance is cached at module scope because constructing `Intl.DateTimeFormat` is
 // surprisingly expensive and a chat view can render hundreds of timestamps.
+import { getActiveLocale } from '../i18n/core'
 
-let fullTimestampFormatter: Intl.DateTimeFormat | null = null;
+const fullTimestampFormatters = new Map<string, Intl.DateTimeFormat>();
 
 function getFullTimestampFormatter(): Intl.DateTimeFormat {
-  if (fullTimestampFormatter === null) {
-    fullTimestampFormatter = new Intl.DateTimeFormat(undefined, {
+  const locale = getActiveLocale()
+  let formatter = fullTimestampFormatters.get(locale)
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat(locale, {
       dateStyle: "short",
       timeStyle: "short",
     });
+    fullTimestampFormatters.set(locale, formatter)
   }
-  return fullTimestampFormatter;
+  return formatter;
 }
 
 /**

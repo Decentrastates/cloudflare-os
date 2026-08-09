@@ -12,6 +12,7 @@ import type { AdminSettings } from "./admin-settings.js";
 import { isReservedBlueprintKey, readBlueprintKvRecord } from "./blueprint-archive.js";
 import { filterEnabledResources, isResourceDisabled, readAdminConfig } from "./admin-config.js";
 import { buildGatekeeperVendorMap } from "./auth/auth-vendors.js";
+import { translateSystemMetadata, type UiLocale } from '@gadgets/workshop-shared/i18n';
 
 const logger = createWorkshopLogger("workshop.user");
 
@@ -1333,7 +1334,8 @@ export class UserDurableObject extends DurableObject<Cloudflare.Env> {
   }
 
   async subscribeConnectedAccounts(
-      subscriber: RpcStub<ConnectedAccountsSubscriber>, filter?: ConnectedAccountsFilter)
+      subscriber: RpcStub<ConnectedAccountsSubscriber>, filter?: ConnectedAccountsFilter,
+      locale: UiLocale = 'en')
       : Promise<RpcStub<{}>> {
     if (filter?.includeForcedAutoProvisionedAccounts) await this.#ensureAutoProvisionedAccounts();
 
@@ -1413,6 +1415,24 @@ export class UserDurableObject extends DurableObject<Cloudflare.Env> {
       let credentialsValid = areCredentialsValid(record);
 
       seenIds.add(record.id);
+      if (locale !== 'en') {
+        vendorDescription = {
+          ...vendorDescription,
+          displayName: translateSystemMetadata(locale, vendorDescription.displayName),
+          tagline: vendorDescription.tagline
+            ? translateSystemMetadata(locale, vendorDescription.tagline)
+            : undefined,
+          description: vendorDescription.description
+            ? translateSystemMetadata(locale, vendorDescription.description)
+            : undefined,
+        };
+        supportedResources = supportedResources.map(resource => ({
+          ...resource,
+          title: translateSystemMetadata(locale, resource.title),
+          description: translateSystemMetadata(locale, resource.description),
+        }));
+      }
+
       subscriber.add(record.id, record.description, vendorDescription,
           supportedResources, credentialsValid, record.vendorId).catch(unsubscribe)
     }

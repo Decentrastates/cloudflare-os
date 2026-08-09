@@ -5,6 +5,7 @@ import { CloudWarning, Lightning } from '@phosphor-icons/react'
 import { useOptionalAuthenticatedApi } from '../../AuthContext'
 import { buildAddCreditsUrl } from './creditsUrl'
 import ResetCountdown from './ResetCountdown'
+import { t } from '../../i18n/core'
 
 interface OutOfCreditsModalProps {
   open: boolean
@@ -75,7 +76,7 @@ export default function OutOfCreditsModal({ open, onClose }: OutOfCreditsModalPr
       setAccounts(null)
       refresh()
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to select account'
+      const msg = err instanceof Error ? err.message : t('Failed to select account')
       toasts.add({ title: msg, variant: 'error' })
     } finally {
       setSelecting(null)
@@ -90,8 +91,7 @@ export default function OutOfCreditsModal({ open, onClose }: OutOfCreditsModalPr
       <Dialog className="p-6 sm:w-[560px]" size="base">
         <Dialog.Title className="text-lg font-semibold mb-2 flex items-center gap-2">
           <CloudWarning size={22} weight="bold" className="text-kumo-warning" />
-          You've reached your free usage limit
-        </Dialog.Title>
+          {t("You've reached your free usage limit")}</Dialog.Title>
 
         {usage === null ? (
           <div className="flex justify-center py-8"><Loader size="base" /></div>
@@ -99,44 +99,45 @@ export default function OutOfCreditsModal({ open, onClose }: OutOfCreditsModalPr
           <div className="space-y-4">
             {!connected ? (
               <p className="text-sm text-kumo-subtle">
-                You've used all {usage.dailyLimit} of your free {usage.dailyLimit === 1 ? 'request' : 'requests'} for
-                today. Connect your Cloudflare account to keep building now — usage beyond the free
-                tier is billed to your own Cloudflare AI Gateway credits
+                {usage.dailyLimit === 1
+                  ? t("You've used your free request for today. Connect your Cloudflare account to keep building now — usage beyond the free tier is billed to your own Cloudflare AI Gateway credits.")
+                  : t("You've used all {{count}} free requests for today. Connect your Cloudflare account to keep building now — usage beyond the free tier is billed to your own Cloudflare AI Gateway credits.", { count: usage.dailyLimit })}
                 {usage.resetAt ? (
                   <>
-                    {' '}— or wait: your free {usage.dailyLimit === 1 ? 'request resets' : 'requests reset'} at
-                    00:00 UTC, in <ResetCountdown resetAt={usage.resetAt} onElapsed={refresh} />.
+                    {' '}{usage.dailyLimit === 1
+                      ? t('Or wait — your free request resets at 00:00 UTC, in ')
+                      : t('Or wait — your free requests reset at 00:00 UTC, in ')}
+                    <ResetCountdown resetAt={usage.resetAt} onElapsed={refresh} />.
                   </>
-                ) : '.'}
+                ) : null}
               </p>
             ) : needsSelection ? (
               <p className="text-sm text-kumo-subtle">
-                Your Cloudflare connection has access to multiple accounts. Choose which one's AI
-                Gateway credits should be billed for usage beyond the free tier.
-              </p>
+                {t("Your Cloudflare connection has access to multiple accounts. Choose which one's AI Gateway credits should be billed for usage beyond the free tier.")}</p>
             ) : (
               <p className="text-sm text-kumo-subtle">
-                Your Cloudflare account is connected
-                {usage.balance !== null && (
-                  <> with a balance of <strong>${usage.balance.toFixed(2)}</strong></>
-                )}
-                , but it's below the minimum needed to continue. Add credits to your AI Gateway to
-                keep building now
+                {usage.balance !== null
+                  ? t('Your Cloudflare account is connected with a balance of {{balance}}, but it is below the minimum needed to continue. Add credits to your AI Gateway to keep building now.', {
+                      balance: `$${usage.balance.toFixed(2)}`,
+                    })
+                  : t('Your Cloudflare account is connected, but its balance is below the minimum needed to continue. Add credits to your AI Gateway to keep building now.')}
                 {usage.resetAt ? (
                   <>
-                    {' '}or wait — your free {usage.dailyLimit === 1 ? 'request resets' : 'requests reset'} at
-                    00:00 UTC, in <ResetCountdown resetAt={usage.resetAt} onElapsed={refresh} />.
+                    {' '}{usage.dailyLimit === 1
+                      ? t('Or wait — your free request resets at 00:00 UTC, in ')
+                      : t('Or wait — your free requests reset at 00:00 UTC, in ')}
+                    <ResetCountdown resetAt={usage.resetAt} onElapsed={refresh} />.
                   </>
-                ) : '.'}
+                ) : null}
               </p>
             )}
 
             {needsSelection && (
               <div className="flex flex-col gap-2">
                 {accounts === null ? (
-                  <p className="text-sm text-kumo-subtle">Loading accounts…</p>
+                  <p className="text-sm text-kumo-subtle">{t("Loading accounts…")}</p>
                 ) : accounts.length === 0 ? (
-                  <p className="text-sm text-kumo-subtle">No accounts available on this connection.</p>
+                  <p className="text-sm text-kumo-subtle">{t("No accounts available on this connection.")}</p>
                 ) : (
                   accounts.map((a) => (
                     <Button
@@ -155,38 +156,35 @@ export default function OutOfCreditsModal({ open, onClose }: OutOfCreditsModalPr
             )}
 
             <p className="text-sm text-kumo-subtle">
-              Learn more about{' '}
+              {t("Learn more about")}{' '}
               <a
                 href="https://developers.cloudflare.com/ai-gateway/features/unified-billing/"
                 target="_blank"
                 rel="noreferrer"
                 className="underline"
               >
-                AI Gateway unified billing
-              </a>
+                {t("AI Gateway unified billing")}</a>
               .
             </p>
 
             <div className="flex items-center justify-end gap-2 pt-2">
               {!connected ? (
                 <>
-                  <Button variant="secondary" onClick={onClose}>Maybe later</Button>
+                  <Button variant="secondary" onClick={onClose}>{t("Maybe later")}</Button>
                   <Button variant="primary" onClick={connect} loading={connecting}>
                     <Lightning size={16} weight="bold" />
-                    Connect Cloudflare
-                  </Button>
+                    {t("Connect Cloudflare")}</Button>
                 </>
               ) : needsSelection ? (
-                <Button variant="secondary" onClick={onClose}>Close</Button>
+                <Button variant="secondary" onClick={onClose}>{t("Close")}</Button>
               ) : (
                 <>
-                  <Button variant="secondary" onClick={onClose}>Close</Button>
+                  <Button variant="secondary" onClick={onClose}>{t("Close")}</Button>
                   <Button
                     variant="primary"
                     onClick={() => window.open(buildAddCreditsUrl(usage.accountId), '_blank')}
                   >
-                    Add credits in Cloudflare
-                  </Button>
+                    {t("Add credits in Cloudflare")}</Button>
                 </>
               )}
             </div>

@@ -5,6 +5,7 @@ import type { RpcStub } from 'capnweb'
 import type { GadgetClient } from '@gadgets/workshop-shared/api'
 import { WorkshopIconButton } from './components/WorkshopControls'
 import { makeExportFilename, saveStreamToFile } from './fileTransfers'
+import { t } from './i18n/core'
 
 type Props = {
   gadget: RpcStub<GadgetClient> | null
@@ -26,24 +27,24 @@ export default function GadgetExportMenu({ gadget, gadgetTitle, chatId, disabled
         () => gadget.exportPdf(chatId),
         makeExportFilename(gadgetTitle, '.pdf'),
         {
-          description: 'PDF document',
+          description: t('PDF document'),
           contentType: 'application/pdf',
           extension: '.pdf',
         },
       )
     } catch (error) {
       console.error('Failed to export Gadget as PDF:', error)
-      toasts.add({ title: 'Failed to export PDF', variant: 'error' })
+      toasts.add({ title: t("Failed to export PDF"), variant: 'error' })
     } finally {
       setExporting(false)
     }
   }
 
   return (
-    <Tooltip content={exporting ? 'Exporting to PDF' : 'Export to PDF'} asChild>
+    <Tooltip content={exporting ? t('Exporting to PDF') : t('Export to PDF')} asChild>
       <span className="relative inline-flex">
         <WorkshopIconButton
-          aria-label="Export to PDF"
+          aria-label={t("Export to PDF")}
           disabled={disabled || !gadget || exporting}
           onClick={() => { void download() }}
         >

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { RpcStub } from 'capnweb'
 import { PublicApi, AuthenticatedApi } from '@gadgets/workshop-shared/api'
+import { getActiveLocale } from './i18n/core'
 
 const CF_ACCESS_MODE = import.meta.env.VITE_CF_ACCESS_MODE === 'true'
 
@@ -55,7 +56,7 @@ export function useAuth(publicApi: RpcStub<PublicApi>) {
     // Use promise pipelining - no need to await. The CF Access JWT is already attached
     // to the request by the browser (injected by the Access service worker/cookie), so
     // the server validates it and returns an authenticated stub immediately.
-    const authenticatedApi = publicApi.authenticateFromCfAccess()
+    const authenticatedApi = publicApi.authenticateFromCfAccess(getActiveLocale())
     setAuthState({
       token: null,
       authenticatedApi,
@@ -80,7 +81,7 @@ export function useAuth(publicApi: RpcStub<PublicApi>) {
 
     // Use promise pipelining - we can use the returned promise as a stub immediately
     // without awaiting. Authentication errors will be handled when the stub is actually used.
-    const authenticatedApi = publicApi.authenticate(token)
+    const authenticatedApi = publicApi.authenticate(token, getActiveLocale())
     setAuthState({
       token,
       authenticatedApi,

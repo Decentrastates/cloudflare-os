@@ -4,6 +4,7 @@ import ReactMarkdown, { type Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { type BannerColor, DEFAULT_BANNER_COLOR } from '@gadgets/workshop-shared/api'
 import { useServerConfig } from '../ServerConfigContext'
+import { t } from '../i18n/core'
 
 const DISMISS_KEY = 'dismissedBanner'
 
@@ -74,8 +75,8 @@ export default function AnnouncementBanner() {
       <button
         onClick={handleDismiss}
         className="flex-shrink-0 rounded-md p-0.5 hover:bg-black/10 transition-colors"
-        aria-label="Dismiss banner"
-        title="Dismiss"
+        aria-label={t("Dismiss banner")}
+        title={t("Dismiss")}
         style={{ color: 'inherit' }}
       >
         <X size={16} />

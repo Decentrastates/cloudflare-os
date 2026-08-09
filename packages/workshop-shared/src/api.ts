@@ -26,6 +26,9 @@
 import { RpcCompatible, RpcStub, RpcTarget } from "capnweb";
 import { AccountDescription, ActionKind, ActionDescription, AvatarImage, GatekeeperUiFrame, ObservationDescription, ResourceDescription, ResourceConfiguratorFrame, SupportedResource, VendorDescription, HookDescription } from "./gatekeeper.js";
 import type { UiFeatureFlags } from "./feature-flags.js";
+import type { UiLocale } from "./i18n.js";
+
+export type { UiLocale } from "./i18n.js";
 
 export const SERVICE_SALT = new Uint8Array([
   0xd9, 0x4e, 0x54, 0x1d, 0x29, 0xc1, 0x03, 0x74, 0x73, 0x7e, 0xb3, 0xe3, 0x34, 0x6d, 0x8f, 0x21
@@ -56,13 +59,13 @@ export interface PublicApi extends RpcTarget {
   startGatekeeperLogin(vendorId: string): Promise<{ url: string; attempt: RpcStub<LoginAttempt> }>;
 
   // Authenticates the user using an auth token (typically stored in localStorage).
-  authenticate(token: string): Promise<AuthenticatedApi>;
+  authenticate(token: string, locale?: UiLocale): Promise<AuthenticatedApi>;
 
   // Like authenticate() but the server is expected to be sitting behind Cloudflare Access, and the
   // client is expected to have already authenticated with Access (before they could load the
   // application in their browser at all). The credentials from the Cloudflare Access session will
   // be used to authenticate the user.
-  authenticateFromCfAccess(): Promise<AuthenticatedApi>;
+  authenticateFromCfAccess(locale?: UiLocale): Promise<AuthenticatedApi>;
 
   // Login with username and password.
   //
@@ -103,7 +106,7 @@ export interface PublicApi extends RpcTarget {
 
   // Fetch blueprint metadata by ID. Returns null if the blueprint doesn't exist. No
   // authentication required (knowing the ID is sufficient, since a blueprint is "just data").
-  getBlueprint(id: string): Promise<BlueprintPublicInfo | null>;
+  getBlueprint(id: string, locale?: UiLocale): Promise<BlueprintPublicInfo | null>;
 
   // Download a blueprint as a `.gadget` archive stream. The archive contains only
   // BlueprintMetadata plus the current blueprint code snapshot, not the full KV record.

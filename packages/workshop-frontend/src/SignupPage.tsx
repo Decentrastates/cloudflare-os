@@ -10,6 +10,8 @@ import { useDocumentTitle } from "./useDocumentTitle";
 import OAuthButtons from "./components/auth/OAuthButtons";
 import SiteLogo from "./components/SiteLogo";
 import { useConnectionLost } from "./RpcContext";
+import { t } from './i18n/core'
+import LanguageSelector from './i18n/LanguageSelector'
 
 interface SignupPageProps {
   rpcStub: RpcStub<PublicApi>;
@@ -20,7 +22,7 @@ export default function SignupPage({ rpcStub }: SignupPageProps) {
   const serverConfigError = useServerConfigError();
   const siteName = useSiteName();
   const connectionLost = useConnectionLost();
-  useDocumentTitle("Create account");
+  useDocumentTitle(t("Create account"));
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -28,18 +30,18 @@ export default function SignupPage({ rpcStub }: SignupPageProps) {
   const [error, setError] = useState<string | null>(null);
 
   const usernameError =
-    username && !/^[a-z0-9_-]+$/i.test(username)
-      ? "Letters, numbers, underscores, and hyphens only"
+    username && !/^[a-z][a-z0-9_]*$/i.test(username)
+      ? t("Start with a letter; use only letters, numbers, and underscores")
       : undefined;
 
   const passwordError =
     password && password.length < 8
-      ? "Must be at least 8 characters"
+      ? t("Must be at least 8 characters")
       : undefined;
 
   const confirmError =
     confirmPassword && confirmPassword !== password
-      ? "Passwords do not match"
+      ? t("Passwords do not match")
       : undefined;
 
   const canSubmit =
@@ -68,10 +70,10 @@ export default function SignupPage({ rpcStub }: SignupPageProps) {
         localStorage.setItem("authToken", token);
         window.location.href = "/";
       } else {
-        setError("Username already exists");
+        setError(t("Username already exists"));
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Account creation failed");
+      setError(err instanceof Error ? t(err.message) : t("Account creation failed"));
     } finally {
       setLoading(false);
     }
@@ -85,9 +87,8 @@ export default function SignupPage({ rpcStub }: SignupPageProps) {
           className="min-h-screen flex flex-col items-center justify-center gap-4 bg-kumo-base px-4"
         >
           <p className="text-sm text-kumo-danger text-center">
-            Couldn&apos;t load deployment settings.
-          </p>
-          <Button variant="secondary" onClick={() => window.location.reload()}>Reload</Button>
+            {t("Couldn't load deployment settings.")}</p>
+          <Button variant="secondary" onClick={() => window.location.reload()}>{t("Reload")}</Button>
         </div>
       );
     }
@@ -95,7 +96,7 @@ export default function SignupPage({ rpcStub }: SignupPageProps) {
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-kumo-base px-4">
         <Loader size="lg" />
         <p className="text-sm text-kumo-subtle text-center">
-          {connectionLost ? "Can't reach the server. Retrying…" : "Loading…"}
+          {connectionLost ? t("Can't reach the server. Retrying…") : t("Loading…")}
         </p>
       </div>
     );
@@ -108,6 +109,7 @@ export default function SignupPage({ rpcStub }: SignupPageProps) {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-kumo-base px-4 relative overflow-hidden">
+      <LanguageSelector className="absolute right-4 top-4 z-10" />
       {/* Dot grid — fades from top to bottom */}
       <div
         className="absolute inset-0 pointer-events-none"
@@ -133,17 +135,16 @@ export default function SignupPage({ rpcStub }: SignupPageProps) {
           <h1 className="text-xl font-semibold text-kumo-default">
             {siteName}
           </h1>
-          <p className="text-sm text-kumo-subtle mt-1">Create your account</p>
+          <p className="text-sm text-kumo-subtle mt-1">{t("Create your account")}</p>
         </div>
 
         {!signupsEnabled && (
           <Banner
             variant="default"
-            title="Signups are closed"
+            title={t("Signups are closed")}
             className="mb-4"
           >
-            New account registration is currently disabled on this deployment.
-          </Banner>
+            {t("New account registration is currently disabled on this deployment.")}</Banner>
         )}
 
         {passwordAuthEnabled && (
@@ -151,7 +152,7 @@ export default function SignupPage({ rpcStub }: SignupPageProps) {
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
               <Input
-                label="Username"
+                label={t("Username")}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 autoFocus
@@ -163,7 +164,7 @@ export default function SignupPage({ rpcStub }: SignupPageProps) {
 
               <Input
                 type="password"
-                label="Password"
+                label={t("Password")}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="new-password"
@@ -174,7 +175,7 @@ export default function SignupPage({ rpcStub }: SignupPageProps) {
 
               <Input
                 type="password"
-                label="Confirm Password"
+                label={t("Confirm Password")}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 autoComplete="new-password"
@@ -192,8 +193,7 @@ export default function SignupPage({ rpcStub }: SignupPageProps) {
                 loading={loading}
                 className="w-full justify-center"
               >
-                Create account
-              </Button>
+                {t("Create account")}</Button>
             </form>
           </>
         )}
@@ -204,7 +204,7 @@ export default function SignupPage({ rpcStub }: SignupPageProps) {
             {passwordAuthEnabled && (
               <div className="flex items-center gap-3 mb-4">
                 <div className="h-px flex-1 bg-kumo-line" />
-                <span className="text-xs text-kumo-subtle">or</span>
+                <span className="text-xs text-kumo-subtle">{t("or")}</span>
                 <div className="h-px flex-1 bg-kumo-line" />
               </div>
             )}
@@ -214,10 +214,9 @@ export default function SignupPage({ rpcStub }: SignupPageProps) {
 
         {passwordAuthEnabled && (
           <p className="text-center text-sm text-kumo-subtle mt-6">
-            Already have an account?{" "}
+            {t("Already have an account?")}{" "}
             <Link to="/" className="text-kumo-brand hover:underline font-medium">
-              Sign in
-            </Link>
+              {t("Sign in")}</Link>
           </p>
         )}
       </div>

@@ -3,6 +3,7 @@ import { Clock, ArrowRight } from '@phosphor-icons/react'
 import { useAuthenticatedApi } from '../AuthContext'
 import { useState, useEffect } from 'react'
 import { GadgetMetadataWithTimestamps } from '@gadgets/workshop-shared/api'
+import { t } from '../i18n/core'
 
 // A simple deterministic gradient based on the gadget ID
 function getGradient(id: string): string {
@@ -53,7 +54,7 @@ function AppRow({ gadget }: { gadget: GadgetMetadataWithTimestamps }) {
         </h3>
         {gadget.owner && (
           <p className="text-xs text-kumo-subtle truncate mt-0.5">
-            Shared by {gadget.owner.name}
+            {t("Shared by")}{gadget.owner.name}
           </p>
         )}
       </div>
@@ -94,7 +95,7 @@ export default function RecentApps() {
     return (
       <section className="w-full max-w-2xl mx-auto">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-medium text-kumo-default">Recent workspaces</h2>
+          <h2 className="text-sm font-medium text-kumo-default">{t("Recent workspaces")}</h2>
         </div>
         <div className="flex flex-col gap-2">
           {[1, 2].map((i) => (
@@ -109,8 +110,7 @@ export default function RecentApps() {
     return (
       <section className="w-full max-w-2xl mx-auto">
         <div className="text-center py-8 text-sm text-kumo-danger">
-          Unable to load your workspaces. Check your connection and try refreshing.
-        </div>
+          {t("Unable to load your workspaces. Check your connection and try refreshing.")}</div>
       </section>
     )
   }
@@ -119,8 +119,7 @@ export default function RecentApps() {
     return (
       <section className="w-full max-w-2xl mx-auto">
         <div className="text-center py-8 text-kumo-inactive text-sm">
-          No workspaces yet. Create your first one above!
-        </div>
+          {t("No workspaces yet. Create your first one above!")}</div>
       </section>
     )
   }
@@ -129,14 +128,12 @@ export default function RecentApps() {
     <section className="w-full max-w-2xl mx-auto">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-sm font-medium text-kumo-default">
-          Recent workspaces
-        </h2>
+          {t("Recent workspaces")}</h2>
         <Link
           to="/"
           className="flex items-center gap-1 text-xs text-kumo-subtle hover:text-kumo-brand transition-colors"
         >
-          View all
-          <ArrowRight size={12} />
+          {t("View all")}<ArrowRight size={12} />
         </Link>
       </div>
 

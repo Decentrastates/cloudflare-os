@@ -27,6 +27,7 @@ import { useOutputFormats } from '../components/format/useOutputFormats'
 import NewFormatRow from '../components/format/NewFormatRow'
 import DeleteConfirmationDialog from '../components/DeleteConfirmationDialog'
 import { WorkshopButton, WorkshopIconButton } from '../components/WorkshopControls'
+import { t } from '../i18n/core'
 
 // The Outputs page: everything the user's workspaces have produced, in one place, so they don't
 // have to remember which workspace they made a thing in. Backed by an index in the user's own
@@ -87,7 +88,7 @@ function OutputMenu({
           render={
             <button
               type="button"
-              aria-label="Output actions"
+              aria-label={t("Output actions")}
               className="cursor-pointer rounded-md p-1.5 text-kumo-subtle transition-colors hover:bg-kumo-fill hover:text-kumo-default focus:opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
             >
               <DotsThreeVertical size={16} />
@@ -96,20 +97,16 @@ function OutputMenu({
         />
         <DropdownMenu.Content className={MENU_CONTENT}>
           <DropdownMenu.Item onClick={onOpen} className={MENU_ITEM}>
-            <ArrowSquareOut size={13} className="mr-2" /> Open
-          </DropdownMenu.Item>
+            <ArrowSquareOut size={13} className="mr-2" /> {t("Open")}</DropdownMenu.Item>
           <DropdownMenu.Item onClick={onOpenWorkspace} className={MENU_ITEM}>
-            <Cube size={13} className="mr-2" /> Open workspace
-          </DropdownMenu.Item>
+            <Cube size={13} className="mr-2" /> {t("Open workspace")}</DropdownMenu.Item>
           {onRename && (
             <DropdownMenu.Item onClick={onRename} className={MENU_ITEM}>
-              <PencilSimple size={13} className="mr-2" /> Rename
-            </DropdownMenu.Item>
+              <PencilSimple size={13} className="mr-2" /> {t("Rename")}</DropdownMenu.Item>
           )}
           {onRemove && (
             <DropdownMenu.Item onClick={onRemove} className={`${MENU_ITEM} text-kumo-danger`}>
-              <Trash size={13} className="mr-2" /> Remove
-            </DropdownMenu.Item>
+              <Trash size={13} className="mr-2" /> {t("Remove")}</DropdownMenu.Item>
           )}
         </DropdownMenu.Content>
       </DropdownMenu>
@@ -119,9 +116,9 @@ function OutputMenu({
 
 // Secondary line under an output's title in the grid, where there's no room for meta columns.
 function subtitle(output: OutputSummary): string {
-  const parts = [output.workspaceTitle || 'Untitled workspace']
-  if (output.owner) parts.push(`Shared by ${output.owner.name}`)
-  parts.push(`Workspace active ${formatRelativeTime(output.lastActive)}`)
+  const parts = [output.workspaceTitle || t('Untitled workspace')]
+  if (output.owner) parts.push(t('Shared by {{name}}', { name: output.owner.name }))
+  parts.push(t('Workspace active {{time}}', { time: formatRelativeTime(output.lastActive) }))
   return parts.join(' · ')
 }
 
@@ -130,10 +127,12 @@ function OutputProvenance({ owner }: { owner?: OutputSummary['owner'] }) {
   return (
     <span
       className="flex w-52 items-center gap-1 truncate whitespace-nowrap"
-      title={owner ? `In a workspace shared by ${owner.name}` : 'In a workspace you created'}
+      title={owner
+        ? t('In a workspace shared by {{name}}', { name: owner.name })
+        : t('In a workspace you created')}
     >
       {owner ? <ShareNetwork size={11} /> : <User size={11} />}
-      <span className="truncate">{owner ? `Shared by ${owner.name}` : 'Created by you'}</span>
+      <span className="truncate">{owner ? t('Shared by {{name}}', { name: owner.name }) : t("Created by you")}</span>
     </span>
   )
 }
@@ -201,7 +200,7 @@ function OutputRow({
         <OutputProvenance owner={output.owner} />
         <span className="flex w-40 items-center justify-end gap-1 whitespace-nowrap">
           <Clock size={10} />
-          Workspace active {formatRelativeTime(output.lastActive)}
+          {t("Workspace active")}{formatRelativeTime(output.lastActive)}
         </span>
       </div>
       <OutputMenu onOpen={onOpen} onOpenWorkspace={onOpenWorkspace}
@@ -281,7 +280,7 @@ function ScopeSelect({
             }`}
           >
             <CurrentIcon size={14} className="shrink-0" />
-            {current.label}
+            {t(current.label)}
             <CaretDown size={11} className="shrink-0 text-kumo-inactive" />
           </button>
         }
@@ -301,7 +300,7 @@ function ScopeSelect({
               onClick={() => onChange(option.value)}
             >
               <Icon size={13} className="mr-2 flex-shrink-0 text-kumo-subtle" />
-              <span className="min-w-0 flex-1 truncate">{option.label}</span>
+              <span className="min-w-0 flex-1 truncate">{t(option.label)}</span>
               <span className="ml-3 flex-shrink-0 tabular-nums text-kumo-inactive">
                 {counts[option.value]}
               </span>
@@ -345,22 +344,20 @@ function RenameOutputDialog({
           <div className="flex items-start justify-between gap-4 border-b border-kumo-line px-5 py-4">
             <div className="min-w-0">
               <Dialog.Title className="text-[15px] font-medium leading-5 tracking-[-0.3px] text-kumo-default">
-                Rename output
-              </Dialog.Title>
+                {t("Rename output")}</Dialog.Title>
               {/* Renames the output itself, unlike the sidebar's workspace rename, which relabels
                   only your own copy. */}
               <Dialog.Description className="mt-1 text-[12px] leading-4 text-kumo-subtle">
-                Renames the output for everyone with access to “{output?.workspaceTitle}”.
+                {t("Renames the output for everyone with access to “")}{output?.workspaceTitle}”.
               </Dialog.Description>
             </div>
-            <WorkshopIconButton type="button" className="!h-7 !w-7" disabled={busy} aria-label="Close" onClick={onClose}>
+            <WorkshopIconButton type="button" className="!h-7 !w-7" disabled={busy} aria-label={t("Close")} onClick={onClose}>
               <X size={16} />
             </WorkshopIconButton>
           </div>
           <div className="px-5 py-4">
             <label className="block text-[12px] font-medium text-kumo-subtle" htmlFor="rename-output-title">
-              Name
-            </label>
+              {t("Name")}</label>
             <input
               id="rename-output-title"
               autoFocus
@@ -371,9 +368,9 @@ function RenameOutputDialog({
             />
           </div>
           <div className="flex items-center justify-end gap-2 border-t border-kumo-line px-5 py-3">
-            <WorkshopButton type="button" disabled={busy} onClick={onClose}>Cancel</WorkshopButton>
+            <WorkshopButton type="button" disabled={busy} onClick={onClose}>{t("Cancel")}</WorkshopButton>
             <WorkshopButton tone="primary" type="submit" disabled={busy || !value.trim()}>
-              {busy ? 'Saving…' : 'Save'}
+              {busy ? t("Saving…") : t("Save")}
             </WorkshopButton>
           </div>
         </form>
@@ -388,7 +385,7 @@ function RenameOutputDialog({
 type TypeFilter = 'all' | string
 
 function OutputsPage() {
-  useDocumentTitle('Outputs')
+  useDocumentTitle(t("Outputs"))
   const { authenticatedApi } = useAuthenticatedApi()
   const navigate = useNavigate()
   const toasts = useKumoToastManager()
@@ -445,7 +442,7 @@ function OutputsPage() {
       // A failed *refresh* must not discard a page already showing something: it is still the last
       // good answer, and the next focus retries. The error state is for having nothing to show.
       if (loadedOnce.current) {
-        toastsRef.current.add({ title: "Couldn't refresh outputs", variant: 'error' })
+        toastsRef.current.add({ title: t("Couldn't refresh outputs"), variant: 'error' })
       } else {
         setLoadError(true)
       }
@@ -494,7 +491,7 @@ function OutputsPage() {
       setRenameOutput(null)
     } catch (err) {
       console.error('Failed to rename output:', err)
-      toasts.add({ title: "Couldn't rename this output", variant: 'error' })
+      toasts.add({ title: t("Couldn't rename this output"), variant: 'error' })
     } finally {
       gadget?.[Symbol.dispose]()
       overseer?.[Symbol.dispose]()
@@ -516,7 +513,7 @@ function OutputsPage() {
       setRemoveOutput(null)
     } catch (err) {
       console.error('Failed to remove output:', err)
-      toasts.add({ title: "Couldn't remove this output", variant: 'error' })
+      toasts.add({ title: t("Couldn't remove this output"), variant: 'error' })
     } finally {
       gadget?.[Symbol.dispose]()
       overseer?.[Symbol.dispose]()
@@ -576,10 +573,9 @@ function OutputsPage() {
     <div className="mx-auto flex h-full w-full max-w-5xl flex-col px-6 sm:px-10">
       <header className="flex items-end justify-between gap-4 px-3 pb-4 pt-10">
         <div className="min-w-0">
-          <h1 className="text-2xl font-semibold tracking-tight text-kumo-default">Outputs</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-kumo-default">{t("Outputs")}</h1>
           <p className="mt-1 text-[13px] leading-[18px] tracking-[-0.25px] text-kumo-subtle">
-            Everything your workspaces have produced, in one place.
-          </p>
+            {t("Everything your workspaces have produced, in one place.")}</p>
         </div>
         <ViewToggle view={view} onChange={setView} />
       </header>
@@ -591,7 +587,7 @@ function OutputsPage() {
         <div className="-mx-1 flex items-center gap-1 overflow-x-auto px-1 sidebar-scroll">
           {showTypeFilters && (
             <>
-              <FilterChip active={typeFilter === 'all'} label="All" count={inTypeScope.length}
+              <FilterChip active={typeFilter === 'all'} label={t("All")} count={inTypeScope.length}
                           onClick={() => setTypeFilter('all')} />
               {presentTypes.map(([id, plural]) => (
                 <FilterChip
@@ -623,7 +619,7 @@ function OutputsPage() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search outputs…"
+              placeholder={t("Search outputs…")}
               className="h-9 w-full rounded-lg border border-kumo-line bg-kumo-base pl-9 pr-4 text-[13px] tracking-[-0.25px] text-kumo-default placeholder:text-kumo-inactive transition-[border-color,box-shadow] duration-150 ease-out focus:border-kumo-ring focus:outline-none focus:ring-[3px] focus:ring-kumo-ring/15"
             />
           </div>
@@ -639,10 +635,9 @@ function OutputsPage() {
           </div>
         ) : loadError ? (
           <div className="py-12 text-center text-sm">
-            <p className="text-kumo-danger">Something went wrong loading your outputs.</p>
+            <p className="text-kumo-danger">{t("Something went wrong loading your outputs.")}</p>
             <button onClick={() => setReloadToken((n) => n + 1)} className="mt-1 text-kumo-brand underline">
-              Try again
-            </button>
+              {t("Try again")}</button>
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center gap-3 px-3 py-20 text-center">
@@ -651,16 +646,16 @@ function OutputsPage() {
             </div>
             <div>
               <p className="text-sm font-medium text-kumo-default">
-                {isFiltered ? 'No outputs match' : 'No outputs yet'}
+                {isFiltered ? t("No outputs match") : t("No outputs yet")}
               </p>
               <p className="mt-1 text-[13px] leading-[18px] text-kumo-subtle">
                 {isFiltered
-                  ? 'Try a different filter or search term.'
-                  : 'Anything your workspaces build will show up here.'}
+                  ? t("Try a different filter or search term.")
+                  : t("Anything your workspaces build will show up here.")}
               </p>
             </div>
             {/* Offer the deployment's formats here rather than sending them to the home page. */}
-            {!isFiltered && <NewFormatRow label="Start with" />}
+            {!isFiltered && <NewFormatRow label={t("Start with")} />}
           </div>
         ) : view === 'grid' ? (
           <div className="grid grid-cols-2 gap-4 px-3 sm:grid-cols-3 lg:grid-cols-4">
@@ -695,16 +690,14 @@ function OutputsPage() {
       />
       <DeleteConfirmationDialog
         open={removeOutput !== null}
-        title={`Remove “${removeOutput?.title || 'Untitled'}”?`}
+        title={t('Remove “{{title}}”?', { title: removeOutput?.title || t('Untitled') })}
         description={
           <>
-            This permanently removes the output from “{removeOutput?.workspaceTitle}”
-            {removeOutput?.owner ? ', for everyone with access to that workspace' : ''}. Other
-            outputs in that workspace stay available. This can’t be undone.
-          </>
+            {t("This permanently removes the output from “")}{removeOutput?.workspaceTitle}”
+            {removeOutput?.owner ? t(", for everyone with access to that workspace") : ''}{t(". Other outputs in that workspace stay available. This can’t be undone.")}</>
         }
-        confirmLabel="Remove"
-        confirmingLabel="Removing…"
+        confirmLabel={t("Remove")}
+        confirmingLabel={t('Removing…')}
         isDeleting={mutationBusy}
         onOpenChange={(open) => { if (!open) setRemoveOutput(null) }}
         onConfirm={() => { void confirmRemove() }}

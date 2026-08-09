@@ -1,4 +1,5 @@
 import { List, GridFour } from '@phosphor-icons/react'
+import { t } from '../i18n/core'
 
 // Shared grid/list segmented toggle. Used on Gatekeepers and Outputs so view-switching looks and
 // behaves identically across the app.
@@ -20,7 +21,7 @@ export default function ViewToggle({
           key={value}
           type="button"
           onClick={() => onChange(value)}
-          aria-label={label}
+          aria-label={t(label)}
           aria-pressed={view === value}
           className={`grid h-8 w-8 cursor-pointer place-items-center rounded-md transition-colors ${
             view === value

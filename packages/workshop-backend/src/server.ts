@@ -1,8 +1,9 @@
 import { RpcStub, RpcTarget, newWorkersRpcResponse } from "capnweb";
 import { validateRpc } from "capnweb-validate";
 import type { JWTPayload } from "jose";
-import { PublicApi, AuthenticatedApi, Overseer, GadgetMetadataWithTimestamps, AiChatAuthorInfo, AiModelConfig, AiGatewayInfo, AiModelProvider, ConnectedAccountsSubscriber, ConnectedAccountsFilter, GatekeeperVendorFilter, ObserverConfigCallback, BlueprintLibrarySummary, BlueprintPublicInfo, BlueprintUserSummary, BlueprintBindingAssignment, AgentSpawnerConfig, WorkpieceId, BLUEPRINT_SCREENSHOT_PATH_PREFIX, BLUEPRINT_SCREENSHOT_R2_PREFIX, blueprintScreenshotUrl, ServerConfig, CloudflareUsageInfo, CloudflareAccountOption, LoginAttempt, GatekeeperAppInfo, AdminApi, GatekeeperVendorInfo, OutputFormatOffer, ListOutputsResult, createOpenGadgetError, getOpenGadgetErrorCode, OPEN_GADGET_ERROR_CODES } from '@gadgets/workshop-shared/api';
+import { PublicApi, AuthenticatedApi, Overseer, GadgetMetadataWithTimestamps, AiChatAuthorInfo, AiModelConfig, AiGatewayInfo, AiModelProvider, ConnectedAccountsSubscriber, ConnectedAccountsFilter, GatekeeperVendorFilter, ObserverConfigCallback, BlueprintLibrarySummary, BlueprintPublicInfo, BlueprintUserSummary, BlueprintBindingAssignment, AgentSpawnerConfig, WorkpieceId, BLUEPRINT_SCREENSHOT_PATH_PREFIX, BLUEPRINT_SCREENSHOT_R2_PREFIX, blueprintScreenshotUrl, ServerConfig, CloudflareUsageInfo, CloudflareAccountOption, LoginAttempt, GatekeeperAppInfo, AdminApi, GatekeeperVendorInfo, OutputFormatOffer, ListOutputsResult, createOpenGadgetError, getOpenGadgetErrorCode, OPEN_GADGET_ERROR_CODES, type UiLocale } from '@gadgets/workshop-shared/api';
 import type { UiFeatureFlags } from "@gadgets/workshop-shared/feature-flags";
+import { translateSystemMetadata } from "@gadgets/workshop-shared/i18n";
 import { getServerConfig } from "./deployment-config.js";
 import { isPasswordAuthEnabled, getAuthGatekeeperAllowlist } from "./auth/config.js";
 import { getAuthVendorBinding } from "./auth/auth-vendors.js";
@@ -13,7 +14,7 @@ import { deploymentOutputForBlueprint, listFormatOffers, readAdminConfig } from 
 
 // Re-export the optional-feature Durable Objects + entrypoints so they can be bound in wrangler.
 export { PendingLogin, LoginConnectCallbackImpl };
-import { GatekeeperUiFrame } from "@gadgets/workshop-shared/gatekeeper";
+import { GatekeeperUiFrame, type SupportedResource, type VendorDescription } from "@gadgets/workshop-shared/gatekeeper";
 import { LanguageModelGatekeeper } from "./ai-models";
 import { getAiGatewayConfig } from "./ai-gateway.js";
 import { AdminSettings, AdminApiImpl } from "./admin-settings.js";
@@ -28,6 +29,7 @@ import { verifyCfAccessJwt } from "./access.js";
 import { resolveUiFeatureFlags } from "./feature-flags";
 import { serveSiteLogo, SITE_LOGO_PATH } from "./site-logo.js";
 import { createWorkshopLogger } from "./observability";
+import { FORMAT_BLUEPRINTS } from "./generated/format-blueprints.js";
 
 const logger = createWorkshopLogger("workshop.server");
 
@@ -40,6 +42,70 @@ function publicBlueprintInfo(id: string, metadata: BlueprintPublicInfo['metadata
     id,
     metadata,
     screenshotUrl: blueprintScreenshotUrl(id, metadata),
+  };
+}
+
+function uiLocale(value: UiLocale | undefined): UiLocale {
+  return value === 'zh-CN' || value === 'zh-TW' ? value : 'en';
+}
+
+const LOCALIZED_BUNDLED_BLUEPRINT_IDS = new Set(
+  FORMAT_BLUEPRINTS.map((format) => format.blueprintId),
+);
+
+function isLocalizedBundledBlueprint(id: string): boolean {
+  return LOCALIZED_BUNDLED_BLUEPRINT_IDS.has(id);
+}
+
+function localizeOutput<T extends { noun: string; plural: string }>(output: T | undefined,
+                                                                    locale: UiLocale): T | undefined {
+  return output && locale !== 'en' ? {
+    ...output,
+    noun: translateSystemMetadata(locale, output.noun),
+    plural: translateSystemMetadata(locale, output.plural),
+  } : output;
+}
+
+function localizeBlueprintMetadata<T extends { title: string; description?: string; output?: any }>(
+    id: string, metadata: T, locale: UiLocale): T {
+  if (locale === 'en' || !isLocalizedBundledBlueprint(id)) return metadata;
+  return {
+    ...metadata,
+    title: translateSystemMetadata(locale, metadata.title),
+    description: metadata.description
+      ? translateSystemMetadata(locale, metadata.description)
+      : metadata.description,
+    output: localizeOutput(metadata.output, locale),
+  };
+}
+
+function localizeResource(resource: SupportedResource, locale: UiLocale): SupportedResource {
+  if (locale === 'en') return resource;
+  return {
+    ...resource,
+    title: translateSystemMetadata(locale, resource.title),
+    description: translateSystemMetadata(locale, resource.description),
+  };
+}
+
+function localizeVendorDescription(description: VendorDescription, locale: UiLocale): VendorDescription {
+  if (locale === 'en') return description;
+  return {
+    ...description,
+    displayName: translateSystemMetadata(locale, description.displayName),
+    tagline: description.tagline ? translateSystemMetadata(locale, description.tagline) : undefined,
+    description: description.description
+      ? translateSystemMetadata(locale, description.description)
+      : undefined,
+  };
+}
+
+function localizeVendorInfo(info: GatekeeperVendorInfo, locale: UiLocale): GatekeeperVendorInfo {
+  if (locale === 'en') return info;
+  return {
+    ...info,
+    description: localizeVendorDescription(info.description, locale),
+    supportedResources: info.supportedResources.map(resource => localizeResource(resource, locale)),
   };
 }
 
@@ -75,7 +141,8 @@ type Env = Cloudflare.Env & {
 class AuthenticatedApiImpl extends RpcTarget implements AuthenticatedApi {
   constructor(private ctx: ExecutionContext, private env: Env,
       private user: DurableObjectStub<UserDurableObject>,
-      private abortSession: (reason: Error) => void) {
+      private abortSession: (reason: Error) => void,
+      private locale: UiLocale = 'en') {
     super();
 
     this.overseers = this.ctx.exports.OverseerDurableObject;
@@ -289,18 +356,27 @@ class AuthenticatedApiImpl extends RpcTarget implements AuthenticatedApi {
     return this.user.listGadgets();
   }
 
-  listOutputs(): Promise<ListOutputsResult> {
+  async listOutputs(): Promise<ListOutputsResult> {
     return this.user.listOutputs();
   }
 
   async listOutputFormats(): Promise<OutputFormatOffer[]> {
     let offers = await listFormatOffers(this.env, await readAdminConfig(this.env));
     // Neither the agent's hint nor the binding details are part of what a user is offered here.
-    return offers.map(({agentHint: _agentHint, bindings: _bindings, ...offer}) => offer);
+    return offers.map(({agentHint: _agentHint, bindings: _bindings, ...offer}) => ({
+      ...offer,
+      output: isLocalizedBundledBlueprint(offer.blueprintId)
+        ? localizeOutput(offer.output, this.locale)!
+        : offer.output,
+      description: isLocalizedBundledBlueprint(offer.blueprintId)
+        ? translateSystemMetadata(this.locale, offer.description)
+        : offer.description,
+    }));
   }
 
-  listGatekeeperVendors(filter?: GatekeeperVendorFilter): Promise<GatekeeperVendorInfo[]> {
-    return this.user.listGatekeeperVendors(filter);
+  async listGatekeeperVendors(filter?: GatekeeperVendorFilter): Promise<GatekeeperVendorInfo[]> {
+    return (await this.user.listGatekeeperVendors(filter))
+        .map(info => localizeVendorInfo(info, this.locale));
   }
 
   connectAccount(vendorId: string, resourceUrlPatterns?: string[]): Promise<{url: string}> {
@@ -311,8 +387,9 @@ class AuthenticatedApiImpl extends RpcTarget implements AuthenticatedApi {
     return this.user.ensureAccountResources(accountId, resourceUrlPatterns);
   }
 
-  listAddableGatekeepers(): Promise<GatekeeperVendorInfo[]> {
-    return this.user.listAddableGatekeepers();
+  async listAddableGatekeepers(): Promise<GatekeeperVendorInfo[]> {
+    return (await this.user.listAddableGatekeepers())
+        .map(info => localizeVendorInfo(info, this.locale));
   }
 
   provisionAmbientAccount(vendorId: string): Promise<void> {
@@ -322,7 +399,7 @@ class AuthenticatedApiImpl extends RpcTarget implements AuthenticatedApi {
   subscribeConnectedAccounts(
       subscriber: RpcStub<ConnectedAccountsSubscriber>, filter?: ConnectedAccountsFilter)
       : Promise<RpcStub<{}>> {
-    return this.user.subscribeConnectedAccounts(subscriber, filter);
+    return this.user.subscribeConnectedAccounts(subscriber, filter, this.locale);
   }
 
   disconnectAccount(accountId: number): Promise<void> {
@@ -352,7 +429,10 @@ class AuthenticatedApiImpl extends RpcTarget implements AuthenticatedApi {
   }
 
   async listLibraryBlueprints(): Promise<BlueprintLibrarySummary[]> {
-    return this.user.listLibraryBlueprints();
+    return (await this.user.listLibraryBlueprints()).map(blueprint => ({
+      ...blueprint,
+      metadata: localizeBlueprintMetadata(blueprint.id, blueprint.metadata, this.locale),
+    }));
   }
 
   async setBlueprintPinned(blueprintId: string, pinned: boolean): Promise<void> {
@@ -365,7 +445,8 @@ class AuthenticatedApiImpl extends RpcTarget implements AuthenticatedApi {
 
   async listFeaturedBlueprints(): Promise<BlueprintPublicInfo[]> {
     return (await listFeaturedBlueprintsFromKv(this.env)).map(
-        blueprint => publicBlueprintInfo(blueprint.id, blueprint.metadata));
+        blueprint => publicBlueprintInfo(blueprint.id,
+            localizeBlueprintMetadata(blueprint.id, blueprint.metadata, this.locale)));
   }
 
   async addBlueprintToLibrary(blueprintId: string): Promise<void> {
@@ -556,7 +637,7 @@ class AuthenticatedApiImpl extends RpcTarget implements AuthenticatedApi {
         .filter(account => account.description.providesUi)
         .map(account => ({
           id: account.vendorId,
-          title: account.description.providesUi!.title,
+          title: translateSystemMetadata(this.locale, account.description.providesUi!.title),
           icon: account.description.providesUi!.icon,
         }));
   }
@@ -584,7 +665,7 @@ class AuthenticatedApiImpl extends RpcTarget implements AuthenticatedApi {
     let adminUserId = this.user.id.name!;
     // @ts-expect-error Cap'n Web RPC stubs and native RPC targets are compatible but the type
     //     system doesn't know this.
-    return new AdminApiImpl(this.adminSettings.getByName(""), adminUserId);
+    return new AdminApiImpl(this.adminSettings.getByName(""), adminUserId, this.locale);
   }
 }
 
@@ -661,7 +742,7 @@ class PublicApiImpl extends RpcTarget implements PublicApi {
     return { url, attempt: new LoginAttemptImpl(pending) };
   }
 
-  async authenticate(token: string): Promise<AuthenticatedApi> {
+  async authenticate(token: string, locale?: UiLocale): Promise<AuthenticatedApi> {
     let split = token.split(':');
     if (split.length !== 2) {
       throw new Error("Invalid session token.");
@@ -675,10 +756,10 @@ class PublicApiImpl extends RpcTarget implements PublicApi {
       user_id: userId.toString(),
       source: "session_token",
     });
-    return new AuthenticatedApiImpl(this.ctx, this.env, stub, this.abortSession);
+    return new AuthenticatedApiImpl(this.ctx, this.env, stub, this.abortSession, uiLocale(locale));
   }
 
-  async authenticateFromCfAccess(): Promise<AuthenticatedApi> {
+  async authenticateFromCfAccess(locale?: UiLocale): Promise<AuthenticatedApi> {
     if (!this.accessPayload) {
       throw new Error("Not authenticated with Access.");
     }
@@ -700,7 +781,7 @@ class PublicApiImpl extends RpcTarget implements PublicApi {
       user_id: userId.toString(),
       source: "cf_access",
     });
-    return new AuthenticatedApiImpl(this.ctx, this.env, stub, this.abortSession);
+    return new AuthenticatedApiImpl(this.ctx, this.env, stub, this.abortSession, uiLocale(locale));
   }
 
   async login(username: string, passwordHash: Uint8Array): Promise<string | null> {
@@ -757,11 +838,11 @@ class PublicApiImpl extends RpcTarget implements PublicApi {
     return `${username}:${token}`;
   }
 
-  async getBlueprint(id: string): Promise<BlueprintPublicInfo | null> {
+  async getBlueprint(id: string, locale?: UiLocale): Promise<BlueprintPublicInfo | null> {
     let kvRecord = await readBlueprintKvRecord(this.env, id);
     if (!kvRecord) return null;
 
-    return publicBlueprintInfo(id, kvRecord.metadata);
+    return publicBlueprintInfo(id, localizeBlueprintMetadata(id, kvRecord.metadata, uiLocale(locale)));
   }
 
   async downloadBlueprint(id: string): Promise<ReadableStream<Uint8Array>> {

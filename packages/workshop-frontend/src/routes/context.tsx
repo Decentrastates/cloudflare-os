@@ -3,6 +3,7 @@ import { BookOpen, Sparkle, type Icon as PhosphorIcon } from '@phosphor-icons/re
 import { useDocumentTitle } from '../useDocumentTitle'
 import ComingSoonPreview from '../components/ComingSoonPreview'
 import { useSiteName } from '../ServerConfigContext'
+import { t } from '../i18n/core'
 
 // Context & Skills. The knowledge/skills surface isn't built into the rail yet — agents read
 // curated collections of documents (context) and reusable skills. Until then this page shows a
@@ -45,32 +46,31 @@ function ContextRow({ item }: { item: ContextItem }) {
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium tracking-[-0.25px] text-kumo-default">{item.name}</p>
         <p className="mt-0.5 truncate text-[12px] leading-4 tracking-[-0.2px] text-kumo-subtle">
-          {label} · {item.detail}
+          {t(label)} · {t(item.detail)}
         </p>
       </div>
       <span className="hidden shrink-0 text-xs tracking-[-0.1px] text-kumo-inactive lg:block">
-        {item.updated}
+        {t(item.updated)}
       </span>
     </div>
   )
 }
 
 function ContextPage() {
-  useDocumentTitle('Context & Skills')
+  useDocumentTitle(t("Context & Skills"))
   const siteName = useSiteName()
   return (
     <div className="mx-auto flex h-full w-full max-w-4xl flex-col px-6 sm:px-10">
       <header className="px-3 pb-4 pt-10">
-        <h1 className="text-2xl font-semibold tracking-tight text-kumo-default">Context &amp; Skills</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-kumo-default">{t("Context & Skills")}</h1>
         <p className="mt-1 text-[13px] leading-[18px] tracking-[-0.25px] text-kumo-subtle">
-          Curated collections of knowledge your agents read, plus reusable skills they can apply.
-        </p>
+          {t("Curated collections of knowledge your agents read, plus reusable skills they can apply.")}</p>
       </header>
 
       <ComingSoonPreview
         icon={BookOpen}
-        title={`Context & Skills are coming soon to ${siteName}`}
-        description="A preview of how you'll author knowledge collections and skills for your agents to draw on."
+        title={t('Context & Skills are coming soon to {{siteName}}', { siteName })}
+        description={t("A preview of how you'll author knowledge collections and skills for your agents to draw on.")}
       >
         <div className="chat-panel min-h-0 flex-1 overflow-y-auto pb-8 pt-1">
           <div className="flex flex-col gap-0.5">

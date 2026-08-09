@@ -1,5 +1,6 @@
 import { ResourceConfiguratorFrame } from '@gadgets/workshop-shared/gatekeeper'
 import SandboxedResourceConfigurator from './SandboxedResourceConfigurator'
+import { t } from './i18n/core'
 
 // Renders the resource configurator slot inside the gatekeeper modal.
 export default function ResourceConfiguratorHost({
@@ -25,8 +26,8 @@ export default function ResourceConfiguratorHost({
   initialResourceUrl?: string
   resourceUrlPattern?: string
 }) {
-  if (disabled) return <Placeholder>Choose an account before selecting a resource.</Placeholder>
-  if (loading) return <Placeholder>Loading configurator...</Placeholder>
+  if (disabled) return <Placeholder>{t("Choose an account before selecting a resource.")}</Placeholder>
+  if (loading) return <Placeholder>{t("Loading configurator...")}</Placeholder>
   if (error) return <Placeholder>{error}</Placeholder>
   if (!frame) return null
 

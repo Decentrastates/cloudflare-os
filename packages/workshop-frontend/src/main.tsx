@@ -13,6 +13,7 @@ import './styles.css'
 import FrontendErrorBoundary from './FrontendErrorBoundary'
 import { installWorkshopErrorReporting, reportIssue } from './errorReporting'
 import { applySiteFavicon, cacheBustSiteLogoUrl } from './siteLogoUtils'
+import { I18nProvider } from './i18n/I18nContext'
 
 // ---------------------------------------------------------------------------
 // Dev auto-login: if VITE_DEV_AUTO_LOGIN=true, automatically create/login
@@ -163,16 +164,18 @@ function AppWithConnection() {
   }, [serverConfig]);
 
   return (
-    <ThemeProvider>
-      <RpcContext.Provider value={rpcState}>
-        <ServerConfigErrorContext.Provider value={serverConfigError}>
-          <ServerConfigContext.Provider value={serverConfig}>
-            <AnnouncementBanner />
-            <RouterProvider router={router} />
-          </ServerConfigContext.Provider>
-        </ServerConfigErrorContext.Provider>
-      </RpcContext.Provider>
-    </ThemeProvider>
+    <I18nProvider>
+      <ThemeProvider>
+        <RpcContext.Provider value={rpcState}>
+          <ServerConfigErrorContext.Provider value={serverConfigError}>
+            <ServerConfigContext.Provider value={serverConfig}>
+              <AnnouncementBanner />
+              <RouterProvider router={router} />
+            </ServerConfigContext.Provider>
+          </ServerConfigErrorContext.Provider>
+        </RpcContext.Provider>
+      </ThemeProvider>
+    </I18nProvider>
   );
 }
 

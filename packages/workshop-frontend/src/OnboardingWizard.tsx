@@ -34,6 +34,7 @@ import { useTheme } from './ThemeContext'
 import { useSiteName } from './ServerConfigContext'
 import SiteLogo from './components/SiteLogo'
 import { useDocumentTitle } from './useDocumentTitle'
+import { t } from './i18n/core'
 
 // ─── constants ──────────────────────────────────────────────────────────────────
 
@@ -68,7 +69,7 @@ export default function OnboardingWizard({
   const { resolvedThemeMode } = useTheme()
   const toasts = useKumoToastManager()
   const siteName = useSiteName()
-  useDocumentTitle('Setup')
+  useDocumentTitle(t("Setup"))
 
   // Wizard state
   const [step, setStep] = useState(0) // 0 = avatar, 1 = model, 2 = connections
@@ -243,7 +244,7 @@ export default function OnboardingWizard({
 
   const handleFileSelect = async (file: File) => {
     if (!file.type.startsWith('image/')) {
-      toasts.add({ title: 'Please select an image file', variant: 'error' })
+      toasts.add({ title: t("Please select an image file"), variant: 'error' })
       return
     }
     setAvatarProcessing(true)
@@ -254,7 +255,7 @@ export default function OnboardingWizard({
       setAvatarPreview(avatarBlobUrl(compressed))
     } catch (err) {
       console.error('Failed to process avatar:', err)
-      toasts.add({ title: 'Failed to process image', variant: 'error' })
+      toasts.add({ title: t("Failed to process image"), variant: 'error' })
     } finally {
       setAvatarProcessing(false)
     }
@@ -275,7 +276,7 @@ export default function OnboardingWizard({
       window.open(url, '_blank', 'noopener,noreferrer')
     } catch (err) {
       console.error('Failed to start connection:', err)
-      toasts.add({ title: 'Failed to start connection', variant: 'error' })
+      toasts.add({ title: t("Failed to start connection"), variant: 'error' })
     } finally {
       // Reset after a short delay — the subscription will update the UI when the connection completes
       setTimeout(() => setConnectingVendorId(null), 2000)
@@ -316,7 +317,7 @@ export default function OnboardingWizard({
       onComplete()
     } catch (err) {
       console.error('Failed to complete onboarding:', err)
-      toasts.add({ title: 'Something went wrong. Please try again.', variant: 'error' })
+      toasts.add({ title: t("Something went wrong. Please try again."), variant: 'error' })
       setFinishing(false)
     }
   }
@@ -371,15 +372,13 @@ export default function OnboardingWizard({
               mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
             }`}
           >
-            Let&apos;s set you up
-          </h1>
+            {t("Let's set you up")}</h1>
           <p
             className={`mt-2 text-sm text-kumo-subtle transition-all duration-500 delay-200 ${
               mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
             }`}
           >
-            Just a few things before you start building
-          </p>
+            {t("Just a few things before you start building")}</p>
         </div>
 
         {/* Step indicator */}
@@ -407,11 +406,9 @@ export default function OnboardingWizard({
             {/* ── Step 0: Profile ───────────────────────────────────────────── */}
             <div className="w-full flex-shrink-0 p-8 min-h-[420px]">
               <h2 className="text-lg font-medium text-kumo-default mb-1">
-                Create your profile
-              </h2>
+                {t("Create your profile")}</h2>
               <p className="text-sm text-kumo-subtle mb-12">
-                This is how you&apos;ll appear in conversations
-              </p>
+                {t("This is how you'll appear in conversations")}</p>
 
               {/* Avatar + Display name side by side */}
               <div className="flex items-start gap-5">
@@ -436,7 +433,7 @@ export default function OnboardingWizard({
                       <>
                         <img
                           src={avatarPreview}
-                          alt="Avatar preview"
+                          alt={t("Avatar preview")}
                           className="w-full h-full rounded-full object-cover"
                         />
                         <div className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -468,7 +465,7 @@ export default function OnboardingWizard({
                     }}
                   />
                   <p className="text-xs text-kumo-inactive mt-1.5">
-                    {avatarPreview ? 'Change' : 'Add photo'}
+                    {avatarPreview ? t("Change") : t("Add photo")}
                   </p>
                 </div>
 
@@ -478,14 +475,13 @@ export default function OnboardingWizard({
                     htmlFor="onboarding-display-name"
                     className="block text-xs font-medium text-kumo-subtle mb-1.5"
                   >
-                    Display name
-                  </label>
+                    {t("Display name")}</label>
                   <input
                     id="onboarding-display-name"
                     type="text"
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
-                    placeholder="How should we call you?"
+                    placeholder={t("How should we call you?")}
                     className="w-full px-3 py-2.5 text-sm rounded-lg border border-kumo-line bg-kumo-base text-kumo-default placeholder:text-kumo-inactive focus:outline-none focus:border-kumo-brand transition-colors"
                   />
                 </div>
@@ -496,11 +492,9 @@ export default function OnboardingWizard({
             <div className="w-full flex-shrink-0 p-8 min-h-[420px]">
               <div>
                 <h2 className="text-lg font-medium text-kumo-default mb-1">
-                  Choose your model
-                </h2>
+                  {t("Choose your model")}</h2>
                 <p className="text-sm text-kumo-subtle mb-6">
-                  Pick the AI model you&apos;d like to use by default
-                </p>
+                  {t("Pick the AI model you'd like to use by default")}</p>
 
                 {modelsLoading ? (
                   <div className="flex items-center justify-center py-12">
@@ -555,11 +549,9 @@ export default function OnboardingWizard({
                       {models.length === 0 && (
                         <div className="text-center py-8">
                           <p className="text-sm text-kumo-subtle mb-1">
-                            No models configured yet
-                          </p>
+                            {t("No models configured yet")}</p>
                           <p className="text-xs text-kumo-inactive">
-                            Add a model to get started
-                          </p>
+                            {t("Add a model to get started")}</p>
                         </div>
                       )}
                     </div>
@@ -569,8 +561,7 @@ export default function OnboardingWizard({
                       className="mt-3 w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-kumo-subtle border border-dashed border-kumo-line rounded-xl hover:border-kumo-fill hover:text-kumo-default hover:bg-kumo-tint transition-colors"
                     >
                       <Plus size={14} weight="bold" />
-                      Add new model...
-                    </button>
+                      {t("Add new model...")}</button>
                   </>
                 )}
               </div>
@@ -580,11 +571,9 @@ export default function OnboardingWizard({
             <div className={`w-full flex-shrink-0 p-8 min-h-[420px] ${showConnectionsStep ? '' : 'hidden'}`}>
               <div>
                 <h2 className="text-lg font-medium text-kumo-default mb-1">
-                  Connect your services
-                </h2>
+                  {t("Connect your services")}</h2>
                 <p className="text-sm text-kumo-subtle mb-6">
-                  Link your accounts so your gadgets can access them. You can always add more later.
-                </p>
+                  {t("Link your accounts so your gadgets can access them. You can always add more later.")}</p>
 
                 {vendorsLoading ? (
                   <div className="flex items-center justify-center py-12">
@@ -593,8 +582,7 @@ export default function OnboardingWizard({
                 ) : vendors.length === 0 ? (
                   <div className="text-center py-8">
                     <p className="text-sm text-kumo-subtle">
-                      No services available
-                    </p>
+                      {t("No services available")}</p>
                   </div>
                 ) : (
                   <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto pr-1">
@@ -635,7 +623,7 @@ export default function OnboardingWizard({
                               {vendor.description.displayName}
                             </p>
                             <p className="text-xs text-kumo-subtle truncate">
-                              {isConnected ? 'Connected' : isConnecting ? 'Connecting...' : 'Not connected'}
+                              {isConnected ? t("Connected") : isConnecting ? t("Connecting...") : t("Not connected")}
                             </p>
                           </div>
                           {isConnected && (
@@ -655,8 +643,7 @@ export default function OnboardingWizard({
                 )}
 
                 <p className="text-xs text-kumo-inactive mt-4 text-center">
-                  Optional &middot; you can manage connections any time
-                </p>
+                  {t("Optional · you can manage connections any time")}</p>
               </div>
             </div>
 
@@ -674,8 +661,7 @@ export default function OnboardingWizard({
                 onClick={goBack}
                 className="text-sm text-kumo-subtle hover:text-kumo-default transition-colors"
               >
-                Back
-              </button>
+                {t("Back")}</button>
             ) : (
               <span />
             )}
@@ -687,8 +673,7 @@ export default function OnboardingWizard({
                   onClick={goNext}
                   className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-lg transition-all duration-150 text-kumo-inverse bg-kumo-brand hover:bg-kumo-brand-hover"
                 >
-                  Next
-                  <ArrowRight size={14} weight="bold" />
+                  {t("Next")}<ArrowRight size={14} weight="bold" />
                 </button>
               ) : (
                 <button
@@ -706,12 +691,10 @@ export default function OnboardingWizard({
                   {finishing ? (
                     <>
                       <div className="w-4 h-4 border-2 border-kumo-inverse/30 border-t-kumo-inverse rounded-full animate-spin" />
-                      Setting up...
-                    </>
+                      {t("Setting up...")}</>
                   ) : (
                     <>
-                      Let&apos;s build
-                      <ArrowRight size={14} weight="bold" />
+                      {t("Let's build")}<ArrowRight size={14} weight="bold" />
                     </>
                   )}
                 </button>
@@ -800,10 +783,9 @@ function ShowcaseStep({ active, siteName }: { active: boolean; siteName: string 
     <div>
       <div className="text-center mb-6">
         <h2 className="text-lg font-medium text-kumo-default mb-1">
-          You&apos;re all set
-        </h2>
+          {t("You're all set")}</h2>
         <p className="text-sm text-kumo-subtle">
-          Here&apos;s a taste of what you can do with {siteName}
+          {t("Here's a taste of what you can do with")}{siteName}
         </p>
       </div>
 
@@ -833,10 +815,10 @@ function ShowcaseStep({ active, siteName }: { active: boolean; siteName: string 
               </div>
               <div className="flex-1 min-w-0 pt-0.5">
                 <p className="text-sm font-medium text-kumo-default">
-                  {feature.title}
+                  {t(feature.title)}
                 </p>
                 <p className="text-xs text-kumo-subtle mt-0.5 leading-relaxed">
-                  {feature.description}
+                  {t(feature.description)}
                 </p>
               </div>
             </div>

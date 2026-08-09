@@ -7,6 +7,7 @@ import {
   VendorDescription,
 } from '@gadgets/workshop-shared/gatekeeper'
 import { WorkshopButton, WorkshopIconButton } from './WorkshopControls'
+import { t } from '../i18n/core'
 
 interface ConnectConnectorModalProps {
   open: boolean
@@ -146,11 +147,11 @@ export default function ConnectConnectorModal({
   const accountDisplayName =
     accountDescription?.displayName ??
     accountDescription?.uniqueName ??
-    'Connected'
+    t('Connected')
 
   const headerTitle = isManage
     ? vendorDescription.displayName
-    : `Connect ${vendorDescription.displayName}`
+    : t('Connect {{vendor}}', { vendor: vendorDescription.displayName })
 
   const headerSubline = isManage ? (
     <div className="mt-0.5 flex items-center gap-1.5 text-[13px] leading-[18px] font-normal tracking-[-0.25px] text-kumo-subtle">
@@ -165,7 +166,7 @@ export default function ConnectConnectorModal({
           ? accountDescription?.uniqueName
             ? `${accountDisplayName} / ${accountDescription.uniqueName}`
             : accountDisplayName
-          : 'Credentials expired; reconnect from the Gatekeepers page'}
+          : t("Credentials expired; reconnect from the Gatekeepers page")}
       </span>
     </div>
   ) : (
@@ -230,7 +231,7 @@ export default function ConnectConnectorModal({
           </div>
           <Dialog.Close
             render={(props) => (
-              <WorkshopIconButton {...props} disabled={busy} aria-label="Close">
+              <WorkshopIconButton {...props} disabled={busy} aria-label={t("Close")}>
                 <X size={16} />
               </WorkshopIconButton>
             )}
@@ -249,9 +250,9 @@ export default function ConnectConnectorModal({
               <h3 className="mb-2 text-[12px] leading-4 font-semibold uppercase tracking-[0.6px] text-kumo-inactive">
                 {granular
                   ? isManage
-                    ? 'Resources'
-                    : 'Resources to enable'
-                  : 'What this gatekeeper can do'}
+                    ? t("Resources")
+                    : t("Resources to enable")
+                  : t("What this gatekeeper can do")}
               </h3>
               <ul className="space-y-2">
                 {supportedResources.map((resource) => {
@@ -284,8 +285,8 @@ export default function ConnectConnectorModal({
                           className="shrink-0"
                           aria-label={
                             isManage
-                              ? `Grant ${resource.title}`
-                              : `Enable ${resource.title}`
+                              ? t('Grant {{title}}', { title: resource.title })
+                              : t('Enable {{title}}', { title: resource.title })
                           }
                           checked={checked}
                           disabled={disabled}
@@ -317,13 +318,9 @@ export default function ConnectConnectorModal({
                 />
                 <div className="text-[12px] leading-[17px] font-normal tracking-[-0.2px] text-kumo-default">
                   <span className="font-medium">
-                    Gatekeeper sits between {vendorDescription.displayName} and your Gadgets.
-                  </span>{' '}
+                    {t("Gatekeeper sits between")}{vendorDescription.displayName} {t("and your Gadgets.")}</span>{' '}
                   <span className="text-kumo-subtle">
-                    Each Gadget only sees the resources you connect. If the workspace is shared,
-                    Gatekeeper verifies other users have the required permissions before they can
-                    access those resources.
-                  </span>
+                    {t("Each Gadget only sees the resources you connect. If the workspace is shared, Gatekeeper verifies other users have the required permissions before they can access those resources.")}</span>
                 </div>
               </div>
             </div>
@@ -331,25 +328,20 @@ export default function ConnectConnectorModal({
 
           {isManage && (
             <div className="mt-5 rounded-lg border border-kumo-line bg-kumo-elevated px-4 py-3 text-[12px] leading-[17px] font-normal tracking-[-0.2px] text-kumo-subtle">
-              This account can be used by Gadgets you connect it to. Shared users must have the
-              required permissions before they can access those connected resources.
-            </div>
+              {t("This account can be used by Gadgets you connect it to. Shared users must have the required permissions before they can access those connected resources.")}</div>
           )}
         </div>
 
         <div className="shrink-0 flex items-center justify-between gap-3 border-t border-kumo-line bg-kumo-base px-5 py-3">
           {isManage && confirmingDisconnect ? (
             <p className="m-0 min-w-0 flex-1 text-[12px] leading-4 font-normal tracking-[-0.2px] text-kumo-default">
-              Disconnect {vendorDescription.displayName}? Gadgets using this will lose access.
-            </p>
+              {t('Disconnect {{vendor}}? Gadgets using this will lose access.', { vendor: vendorDescription.displayName })}</p>
           ) : isManage && hasPending ? (
             <p className="m-0 min-w-0 flex-1 text-[12px] leading-4 font-normal tracking-[-0.2px] text-kumo-subtle">
-              {pendingPatterns.length} resource{pendingPatterns.length === 1 ? '' : 's'} to add
-            </p>
+              {pendingPatterns.length} {t("resource")}{pendingPatterns.length === 1 ? '' : t("s")} {t("to add")}</p>
           ) : !isManage && granular && noneSelected ? (
             <p className="m-0 min-w-0 flex-1 text-[12px] leading-4 font-normal tracking-[-0.2px] text-kumo-subtle">
-              Select at least one resource to continue.
-            </p>
+              {t("Select at least one resource to continue.")}</p>
           ) : (
             <span aria-hidden />
           )}
@@ -363,22 +355,20 @@ export default function ConnectConnectorModal({
                       disabled={disconnecting}
                       className="!h-9"
                     >
-                      Cancel
-                    </WorkshopButton>
+                      {t("Cancel")}</WorkshopButton>
                     <WorkshopButton
                       tone="danger"
                       onClick={handleDisconnect}
                       disabled={disconnecting}
                       className="!h-9 min-w-[140px]"
                     >
-                      {disconnecting ? 'Disconnecting...' : 'Yes, disconnect'}
+                      {disconnecting ? t("Disconnecting...") : t("Yes, disconnect")}
                     </WorkshopButton>
                   </>
                 ) : hasPending ? (
                   <>
                     <WorkshopButton onClick={discardPending} disabled={ensuringBusy} className="!h-9">
-                      Cancel
-                    </WorkshopButton>
+                      {t("Cancel")}</WorkshopButton>
                     <WorkshopButton
                       tone="primary"
                       onClick={handleAddResources}
@@ -386,8 +376,8 @@ export default function ConnectConnectorModal({
                       className="min-w-[140px]"
                     >
                       {ensuringBusy
-                        ? 'Opening...'
-                        : `Continue to ${vendorDescription.displayName}`}
+                        ? t("Opening...")
+                        : t('Continue to {{vendor}}', { vendor: vendorDescription.displayName })}
                     </WorkshopButton>
                   </>
                 ) : (
@@ -395,8 +385,7 @@ export default function ConnectConnectorModal({
                     <Dialog.Close
                       render={(props) => (
                         <WorkshopButton {...props} className="!h-9">
-                          Close
-                        </WorkshopButton>
+                          {t("Close")}</WorkshopButton>
                       )}
                     />
                     <WorkshopButton
@@ -405,8 +394,7 @@ export default function ConnectConnectorModal({
                       disabled={disconnecting}
                       className="!h-9"
                     >
-                      Disconnect
-                    </WorkshopButton>
+                      {t("Disconnect")}</WorkshopButton>
                   </>
                 )}
               </>
@@ -415,8 +403,7 @@ export default function ConnectConnectorModal({
                 <Dialog.Close
                   render={(props) => (
                     <WorkshopButton {...props} disabled={connecting} className="!h-9">
-                      Cancel
-                    </WorkshopButton>
+                      {t("Cancel")}</WorkshopButton>
                   )}
                 />
                 <WorkshopButton
@@ -427,11 +414,11 @@ export default function ConnectConnectorModal({
                 >
                   {autoProvisions
                     ? connecting
-                      ? 'Adding...'
-                      : `Add ${vendorDescription.displayName}`
+                      ? t("Adding...")
+                      : t('Add {{vendor}}', { vendor: vendorDescription.displayName })
                     : connecting
-                    ? 'Opening...'
-                    : `Continue to ${vendorDescription.displayName}`}
+                    ? t("Opening...")
+                    : t('Continue to {{vendor}}', { vendor: vendorDescription.displayName })}
                 </WorkshopButton>
               </>
             )}

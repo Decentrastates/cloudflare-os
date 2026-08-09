@@ -6,6 +6,7 @@ import { MonacoBinding } from 'y-monaco'
 import { defineGadgetsCodeTheme, getGadgetsCodeTheme, monoFont } from './components/monacoTheme'
 import { getLanguage } from './getLanguage'
 import { useTheme } from './ThemeContext'
+import { t } from './i18n/core'
 
 interface CodeEditorProps {
   filename: string | null
@@ -68,8 +69,7 @@ export default function CodeEditor({ filename, ytext, isReady, height = '100%' }
         className="flex justify-center items-center bg-kumo-base text-kumo-subtle"
         style={{ height }}
       >
-        Select a file to start editing
-      </div>
+        {t("Select a file to start editing")}</div>
     )
   }
 

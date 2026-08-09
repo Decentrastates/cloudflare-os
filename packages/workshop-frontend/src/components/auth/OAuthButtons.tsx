@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { RpcStub } from 'capnweb'
 import { PublicApi, AuthVendorInfo } from '@gadgets/workshop-shared/api'
 import { Button, Banner } from '@cloudflare/kumo'
+import { t } from '../../i18n/core'
 
 interface OAuthButtonsProps {
   rpcStub: RpcStub<PublicApi>
@@ -86,7 +87,7 @@ export default function OAuthButtons({ rpcStub, vendors, onSuccess }: OAuthButto
       else window.location.reload()
     } catch (err) {
       if (!mountedRef.current) return
-      setError(err instanceof Error ? err.message : 'Could not sign in')
+      setError(err instanceof Error ? err.message : t("Could not sign in"))
       setPending(null)
     }
   }
@@ -111,7 +112,7 @@ export default function OAuthButtons({ rpcStub, vendors, onSuccess }: OAuthButto
               style={{ height: 18, width: 'auto' }}
             />
           )}
-          Continue with {vendor.displayName}
+          {t("Continue with")}{vendor.displayName}
         </Button>
       ))}
     </div>
