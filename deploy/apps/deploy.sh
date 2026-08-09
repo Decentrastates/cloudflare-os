@@ -101,6 +101,14 @@ release_id=$6
 runtime_env="$shared/runtime.env"
 credentials="$shared/admin-credentials"
 image_archive="$shared/$release_id.tar"
+bootstrap_complete="$shared/bootstrap-complete"
+bootstrap_pending="$shared/bootstrap-pending"
+
+legacy_deployment=false
+if docker container inspect cloudflare-os-apps >/dev/null 2>&1 || \
+    [ -L "$shared/current-release" ]; then
+  legacy_deployment=true
+fi
 
 if [ ! -f "$credentials" ]; then
   umask 077
@@ -169,12 +177,45 @@ if ! wait_for_health; then
   exit 1
 fi
 
+volume_identity=$(docker volume inspect cloudflare-os-apps-data --format '{{.CreatedAt}}')
+complete_identity=$(cat "$bootstrap_complete" 2>/dev/null || true)
+pending_identity=$(cat "$bootstrap_pending" 2>/dev/null || true)
+bootstrap_state=$(node deploy/apps/bootstrap-policy.mjs \
+  "$volume_identity" "$complete_identity" "$pending_identity" "$legacy_deployment")
+case "$bootstrap_state" in
+  existing)
+    fresh_bootstrap=false
+    ;;
+  legacy)
+    # Bind the migration marker to this exact pre-marker Docker volume.
+    umask 077
+    printf '%s\n' "$volume_identity" > "$bootstrap_complete.tmp"
+    mv -f "$bootstrap_complete.tmp" "$bootstrap_complete"
+    fresh_bootstrap=false
+    ;;
+  fresh)
+    umask 077
+    printf '%s\n' "$volume_identity" > "$bootstrap_pending"
+    fresh_bootstrap=true
+    ;;
+  *)
+    echo "Unknown bootstrap state: $bootstrap_state" >&2
+    rollback
+    exit 1
+    ;;
+esac
+
 if ! timeout --signal=TERM 45s docker exec \
   -e CLOUDFLARE_OS_BOOTSTRAP_USERNAME="$CLOUDFLARE_OS_BOOTSTRAP_USERNAME" \
   -e CLOUDFLARE_OS_BOOTSTRAP_PASSWORD="$CLOUDFLARE_OS_BOOTSTRAP_PASSWORD" \
+  -e CLOUDFLARE_OS_FRESH_BOOTSTRAP="$fresh_bootstrap" \
   cloudflare-os-apps node deploy/apps/bootstrap-admin.mjs; then
   rollback
   exit 1
+fi
+if [ "$fresh_bootstrap" = true ]; then
+  mv -f "$bootstrap_pending" "$bootstrap_complete"
+  chmod 600 "$bootstrap_complete"
 fi
 
 for container in auto-postgres auto-odoo auto-c-frontend auto-b-frontend; do

@@ -29,7 +29,8 @@ generated file by construction. It preserves the image ID actually used by the p
 container as the rollback tag and verifies the apps-LAN endpoint plus protected Auto containers and
 business endpoints before and after activation. A first-run administrator with a random,
 non-predictable username and password is created before edge activation, then public account
-registration is closed. Protected credentials stay on apps at
+registration is closed on the first successful bootstrap. Later deployments preserve the current
+administrator-controlled registration setting. Protected credentials stay on apps at
 `/home/cddao/Projects/cloudflare-os/shared/admin-credentials` with mode `0600`; they are never placed
 in the repository, rsync payload, Docker build context, or image.
 

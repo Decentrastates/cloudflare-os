@@ -1,5 +1,7 @@
 import { createRequire } from "node:module";
 
+import { shouldCloseSignups } from "./bootstrap-policy.mjs";
+
 // Resolve dependencies from the frontend workspace; pnpm intentionally does not hoist them to the
 // repository root in the runtime image.
 const require = createRequire(new URL("../../packages/workshop-frontend/package.json", import.meta.url));
@@ -12,6 +14,7 @@ const SERVICE_SALT = new Uint8Array([
 
 const username = process.env.CLOUDFLARE_OS_BOOTSTRAP_USERNAME;
 const password = process.env.CLOUDFLARE_OS_BOOTSTRAP_PASSWORD;
+const freshDeployment = process.env.CLOUDFLARE_OS_FRESH_BOOTSTRAP === "true";
 
 if (!username || !password) throw new Error("Bootstrap credentials are required.");
 
@@ -32,10 +35,11 @@ const passwordHash = await argon2id({
 
 const publicApi = newWebSocketRpcSession("ws://127.0.0.1:8787/api");
 try {
-  // Existing releases have sign-ups closed, so authenticate first. Only a fresh volume needs the
-  // short-lived account-creation path before this script closes registration below.
+  // Authenticate first so redeployments preserve the administrator's current signup setting.
+  // Only a fresh volume needs the short-lived account-creation path and automatic signup closure.
   let token = await publicApi.login(username, passwordHash);
-  if (!token) token = await publicApi.createAccount(username, username, passwordHash);
+  const accountCreated = !token;
+  if (accountCreated) token = await publicApi.createAccount(username, username, passwordHash);
   if (!token) throw new Error("Bootstrap administrator authentication failed.");
 
   const authenticatedApi = publicApi.authenticate(token, "en");
@@ -44,11 +48,19 @@ try {
   }
   const adminApi = await authenticatedApi.getAdminApi();
   if (!adminApi) throw new Error("Admin capability was not returned.");
-  await adminApi.setSignupsEnabled(false);
+  if (shouldCloseSignups({ freshDeployment })) {
+    await adminApi.setSignupsEnabled(false);
+  }
 
   const config = await publicApi.getServerConfig();
-  if (config.signupsEnabled) throw new Error("New-account registration is still enabled.");
-  console.log("Bootstrap administrator verified; public sign-ups are closed.");
+  if (freshDeployment && config.signupsEnabled) {
+    throw new Error("New-account registration is still enabled after fresh-volume bootstrap.");
+  }
+  console.log(
+    freshDeployment
+      ? "Bootstrap administrator verified; public sign-ups are closed."
+      : `Bootstrap administrator verified; public sign-ups remain ${config.signupsEnabled ? "enabled" : "disabled"}.`,
+  );
 } finally {
   publicApi[Symbol.dispose]();
 }

@@ -7,7 +7,7 @@
   "scripts": {
     "build": "pnpm run --recursive build",
     "run-local": "node scripts/run-local.mjs",
-    "test": "node --test scripts/*.test.js && pnpm run --recursive --if-present test",
+    "test": "node --test scripts/*.test.js deploy/apps/*.test.mjs && pnpm run --recursive --if-present test",
     "dev-client": "cd packages/workshop-frontend && pnpm run dev",
     "dev-server": "node run-dev-server.js",
     "clean": "pnpm run --recursive clean",
@@ -23,6 +23,6 @@
     "oxlint": "^1.76.0",
     "typescript": "^5.9.3",
     "vite": "^7.3.6",
-    "wrangler": "^4.119.0"
+    "wrangler": "4.112.0"
   }
 }
