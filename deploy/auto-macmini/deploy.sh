@@ -61,4 +61,4 @@ ssh -o BatchMode=yes "$DEPLOY_TARGET" "
 "
 
 curl -fsS "http://192.168.3.36:8787/" >/dev/null
-echo "Cloudflare OS is available at http://192.168.3.36:8787/"
+echo "Bug OS is available at http://192.168.3.36:8787/"

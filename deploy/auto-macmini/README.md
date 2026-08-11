@@ -1,6 +1,6 @@
 # AutoMacmini container deployment
 
-This profile runs Cloudflare OS in Wrangler's local `workerd` mode inside Docker and persists
+This profile runs Bug OS in Wrangler's local `workerd` mode inside Docker and persists
 Wrangler state in the `cloudflare-os-data` volume.
 
 It is intended for local-network evaluation only. The upstream project labels `run-local` as a

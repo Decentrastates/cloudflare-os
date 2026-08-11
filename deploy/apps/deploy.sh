@@ -163,7 +163,7 @@ rollback() {
       echo "Rollback image failed its health gate." >&2
       return 1
     fi
-    echo "Previous Cloudflare OS image restored and verified." >&2
+    echo "Previous Bug OS image restored and verified." >&2
   else
     echo "First deployment failed; the unhealthy stack was removed." >&2
   fi
@@ -245,5 +245,5 @@ curl -fsS -I --connect-timeout 3 --max-time 10 "$health_url" | sed -n '1,8p'
 echo "Application phase healthy; edge activation is still pending."
 REMOTE_DEPLOY
 
-echo "Cloudflare OS application phase is healthy on apps at $HEALTH_URL"
+echo "Bug OS application phase is healthy on apps at $HEALTH_URL"
 echo "Final success still requires Nginx, DNS, TLS, and HTTPS health verification."

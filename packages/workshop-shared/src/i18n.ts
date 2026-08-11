@@ -46,30 +46,30 @@ const zhCN: MetadataCatalog = {
   'Sign in with Cloudflare': '使用 Cloudflare 登录',
   'Context & Skills': '上下文与技能',
   'Scheduled': '计划任务',
-  'Connect your Atlassian Confluence site to let Cloudflare OS search, read, and edit the pages, blog posts, and spaces you share. Build agents that draft documentation, organize knowledge bases, or keep pages up to date.':
-    '连接 Atlassian Confluence 站点，让 Cloudflare OS 搜索、读取和编辑你共享的页面、博客文章与空间。可用于构建起草文档、整理知识库或持续更新页面的智能体。',
-  'Give Cloudflare OS an email address it can receive messages from. Useful for triage agents, ticket-from-email workflows, or anything driven by mail.':
-    '为 Cloudflare OS 提供一个可接收邮件的地址。适用于分类处理智能体、邮件转工单流程以及任何由邮件驱动的工作。',
-  'Connect your GitHub account so Cloudflare OS can read and update issues, pull requests, and reviews on the repositories you choose.':
-    '连接 GitHub 账户，让 Cloudflare OS 读取和更新你所选仓库中的议题、拉取请求与审查。',
-  'Connect your Google account to give Cloudflare OS access to Gmail, Google Docs, Google Sheets, Google Calendar, and BigQuery. Build agents that triage email, draft and edit documents, read spreadsheets, find focus time, schedule meetings, or run analytics queries on your data.':
-    '连接 Google 账户，让 Cloudflare OS 访问 Gmail、Google 文档、Google 表格、Google 日历和 BigQuery。可用于构建邮件分类、文档起草与编辑、表格读取、专注时间查找、会议安排或数据分析智能体。',
-  'Connect your Home Assistant instance so Cloudflare OS can read entity state, call services to control devices, edit dashboards, and render templates. Build agents that automate your home, alert on sensor changes, or generate custom dashboards.':
-    '连接 Home Assistant 实例，让 Cloudflare OS 读取实体状态、调用服务控制设备、编辑仪表板并渲染模板。可用于构建家庭自动化、传感器变化提醒或自定义仪表板智能体。',
-  'Connect your Linear account so Cloudflare OS can read and manage issues, projects, and comments across the teams you choose.':
-    '连接 Linear 账户，让 Cloudflare OS 读取和管理你所选团队中的议题、项目与评论。',
+  'Connect your Atlassian Confluence site to let Bug OS search, read, and edit the pages, blog posts, and spaces you share. Build agents that draft documentation, organize knowledge bases, or keep pages up to date.':
+    '连接 Atlassian Confluence 站点，让 Bug OS 搜索、读取和编辑你共享的页面、博客文章与空间。可用于构建起草文档、整理知识库或持续更新页面的智能体。',
+  'Give Bug OS an email address it can receive messages from. Useful for triage agents, ticket-from-email workflows, or anything driven by mail.':
+    '为 Bug OS 提供一个可接收邮件的地址。适用于分类处理智能体、邮件转工单流程以及任何由邮件驱动的工作。',
+  'Connect your GitHub account so Bug OS can read and update issues, pull requests, and reviews on the repositories you choose.':
+    '连接 GitHub 账户，让 Bug OS 读取和更新你所选仓库中的议题、拉取请求与审查。',
+  'Connect your Google account to give Bug OS access to Gmail, Google Docs, Google Sheets, Google Calendar, and BigQuery. Build agents that triage email, draft and edit documents, read spreadsheets, find focus time, schedule meetings, or run analytics queries on your data.':
+    '连接 Google 账户，让 Bug OS 访问 Gmail、Google 文档、Google 表格、Google 日历和 BigQuery。可用于构建邮件分类、文档起草与编辑、表格读取、专注时间查找、会议安排或数据分析智能体。',
+  'Connect your Home Assistant instance so Bug OS can read entity state, call services to control devices, edit dashboards, and render templates. Build agents that automate your home, alert on sensor changes, or generate custom dashboards.':
+    '连接 Home Assistant 实例，让 Bug OS 读取实体状态、调用服务控制设备、编辑仪表板并渲染模板。可用于构建家庭自动化、传感器变化提醒或自定义仪表板智能体。',
+  'Connect your Linear account so Bug OS can read and manage issues, projects, and comments across the teams you choose.':
+    '连接 Linear 账户，让 Bug OS 读取和管理你所选团队中的议题、项目与评论。',
   'Connect a Model Context Protocol server and use its tools from a Gadget. Reads happen straight away. Anything that writes waits for your approval.':
     '连接模型上下文协议服务器，并在工作组件中使用其工具。读取操作会直接执行，任何写入操作都等待你的批准。',
-  'Connect your Notion workspace to let Cloudflare OS search, read, and edit the pages and databases you share. Build agents that draft documents, organize notes, or manage database records.':
-    '连接 Notion 工作区，让 Cloudflare OS 搜索、读取和编辑你共享的页面与数据库。可用于构建文档起草、笔记整理或数据库记录管理智能体。',
-  'Connect your Slack account to give Cloudflare OS read-only access to the workspaces, channels, direct messages, and threads you can see. Build agents that summarize conversations, monitor channels, or search across your Slack history.':
-    '连接 Slack 账户，让 Cloudflare OS 只读访问你可见的工作区、频道、私信与会话串。可用于构建对话摘要、频道监控或 Slack 历史搜索智能体。',
-  'Connect your Spotify account so Cloudflare OS can search the catalog, read and edit your library and playlists, and control playback on your devices. Grant whole-account access or scope a Gadget to a single playlist.':
-    '连接 Spotify 账户，让 Cloudflare OS 搜索目录、读取和编辑媒体库与播放列表，并控制设备播放。可授予整个账户访问权限，也可将工作组件限定到单个播放列表。',
-  'Connect your Supabase account so Cloudflare OS can run SQL against your project databases, explore schema, and inspect edge functions and storage for the projects you choose.':
-    '连接 Supabase 账户，让 Cloudflare OS 在所选项目数据库上运行 SQL、探索架构，并检查边缘函数与存储。',
-  'Connect your ZoomInfo account so Cloudflare OS can resolve filter values, search companies, contacts, intent signals, scoops, and news, and enrich matched records into full detail. Search is free; enrichment consumes ZoomInfo credits. Build agents that assemble target account lists, research accounts, and prioritize outreach on buying signals.':
-    '连接 ZoomInfo 账户，让 Cloudflare OS 解析筛选值，搜索公司、联系人、意向信号、独家信息与新闻，并将匹配记录丰富为完整资料。搜索免费，资料丰富会消耗 ZoomInfo 额度。可用于构建目标账户清单、账户研究及购买信号优先触达智能体。',
+  'Connect your Notion workspace to let Bug OS search, read, and edit the pages and databases you share. Build agents that draft documents, organize notes, or manage database records.':
+    '连接 Notion 工作区，让 Bug OS 搜索、读取和编辑你共享的页面与数据库。可用于构建文档起草、笔记整理或数据库记录管理智能体。',
+  'Connect your Slack account to give Bug OS read-only access to the workspaces, channels, direct messages, and threads you can see. Build agents that summarize conversations, monitor channels, or search across your Slack history.':
+    '连接 Slack 账户，让 Bug OS 只读访问你可见的工作区、频道、私信与会话串。可用于构建对话摘要、频道监控或 Slack 历史搜索智能体。',
+  'Connect your Spotify account so Bug OS can search the catalog, read and edit your library and playlists, and control playback on your devices. Grant whole-account access or scope a Gadget to a single playlist.':
+    '连接 Spotify 账户，让 Bug OS 搜索目录、读取和编辑媒体库与播放列表，并控制设备播放。可授予整个账户访问权限，也可将工作组件限定到单个播放列表。',
+  'Connect your Supabase account so Bug OS can run SQL against your project databases, explore schema, and inspect edge functions and storage for the projects you choose.':
+    '连接 Supabase 账户，让 Bug OS 在所选项目数据库上运行 SQL、探索架构，并检查边缘函数与存储。',
+  'Connect your ZoomInfo account so Bug OS can resolve filter values, search companies, contacts, intent signals, scoops, and news, and enrich matched records into full detail. Search is free; enrichment consumes ZoomInfo credits. Build agents that assemble target account lists, research accounts, and prioritize outreach on buying signals.':
+    '连接 ZoomInfo 账户，让 Bug OS 解析筛选值，搜索公司、联系人、意向信号、独家信息与新闻，并将匹配记录丰富为完整资料。搜索免费，资料丰富会消耗 ZoomInfo 额度。可用于构建目标账户清单、账户研究及购买信号优先触达智能体。',
   'The Context Library lets you and your team author collections of context documents that agents can consult to learn how to perform tasks. It is always available — no connection needed.':
     '上下文资料库可供你和团队编写上下文文档集合，智能体可查阅这些内容来学习如何执行任务。它始终可用，无需连接。',
   'Register recurring and one-shot workspace tasks.': '注册重复执行或单次执行的工作区任务。',
@@ -200,30 +200,30 @@ const zhTW: MetadataCatalog = {
   'Sign in with Cloudflare': '使用 Cloudflare 登入',
   'Context & Skills': '內容與技能',
   'Scheduled': '排程工作',
-  'Connect your Atlassian Confluence site to let Cloudflare OS search, read, and edit the pages, blog posts, and spaces you share. Build agents that draft documentation, organize knowledge bases, or keep pages up to date.':
-    '連接 Atlassian Confluence 網站，讓 Cloudflare OS 搜尋、讀取及編輯你共享的頁面、部落格文章與空間。可用於建立起草文件、整理知識庫或持續更新頁面的代理程式。',
-  'Give Cloudflare OS an email address it can receive messages from. Useful for triage agents, ticket-from-email workflows, or anything driven by mail.':
-    '為 Cloudflare OS 提供一個可接收郵件的地址。適用於分類處理代理程式、郵件轉工單流程，以及任何由郵件驅動的工作。',
-  'Connect your GitHub account so Cloudflare OS can read and update issues, pull requests, and reviews on the repositories you choose.':
-    '連接 GitHub 帳戶，讓 Cloudflare OS 讀取及更新你所選儲存庫中的議題、拉取請求與審查。',
-  'Connect your Google account to give Cloudflare OS access to Gmail, Google Docs, Google Sheets, Google Calendar, and BigQuery. Build agents that triage email, draft and edit documents, read spreadsheets, find focus time, schedule meetings, or run analytics queries on your data.':
-    '連接 Google 帳戶，讓 Cloudflare OS 存取 Gmail、Google 文件、Google 試算表、Google 日曆及 BigQuery。可用於建立郵件分類、文件起草與編輯、試算表讀取、專注時間查找、會議安排或資料分析代理程式。',
-  'Connect your Home Assistant instance so Cloudflare OS can read entity state, call services to control devices, edit dashboards, and render templates. Build agents that automate your home, alert on sensor changes, or generate custom dashboards.':
-    '連接 Home Assistant 執行個體，讓 Cloudflare OS 讀取實體狀態、呼叫服務控制裝置、編輯儀表板並轉譯範本。可用於建立家庭自動化、感測器變化提醒或自訂儀表板代理程式。',
-  'Connect your Linear account so Cloudflare OS can read and manage issues, projects, and comments across the teams you choose.':
-    '連接 Linear 帳戶，讓 Cloudflare OS 讀取及管理你所選團隊中的議題、專案與留言。',
+  'Connect your Atlassian Confluence site to let Bug OS search, read, and edit the pages, blog posts, and spaces you share. Build agents that draft documentation, organize knowledge bases, or keep pages up to date.':
+    '連接 Atlassian Confluence 網站，讓 Bug OS 搜尋、讀取及編輯你共享的頁面、部落格文章與空間。可用於建立起草文件、整理知識庫或持續更新頁面的代理程式。',
+  'Give Bug OS an email address it can receive messages from. Useful for triage agents, ticket-from-email workflows, or anything driven by mail.':
+    '為 Bug OS 提供一個可接收郵件的地址。適用於分類處理代理程式、郵件轉工單流程，以及任何由郵件驅動的工作。',
+  'Connect your GitHub account so Bug OS can read and update issues, pull requests, and reviews on the repositories you choose.':
+    '連接 GitHub 帳戶，讓 Bug OS 讀取及更新你所選儲存庫中的議題、拉取請求與審查。',
+  'Connect your Google account to give Bug OS access to Gmail, Google Docs, Google Sheets, Google Calendar, and BigQuery. Build agents that triage email, draft and edit documents, read spreadsheets, find focus time, schedule meetings, or run analytics queries on your data.':
+    '連接 Google 帳戶，讓 Bug OS 存取 Gmail、Google 文件、Google 試算表、Google 日曆及 BigQuery。可用於建立郵件分類、文件起草與編輯、試算表讀取、專注時間查找、會議安排或資料分析代理程式。',
+  'Connect your Home Assistant instance so Bug OS can read entity state, call services to control devices, edit dashboards, and render templates. Build agents that automate your home, alert on sensor changes, or generate custom dashboards.':
+    '連接 Home Assistant 執行個體，讓 Bug OS 讀取實體狀態、呼叫服務控制裝置、編輯儀表板並轉譯範本。可用於建立家庭自動化、感測器變化提醒或自訂儀表板代理程式。',
+  'Connect your Linear account so Bug OS can read and manage issues, projects, and comments across the teams you choose.':
+    '連接 Linear 帳戶，讓 Bug OS 讀取及管理你所選團隊中的議題、專案與留言。',
   'Connect a Model Context Protocol server and use its tools from a Gadget. Reads happen straight away. Anything that writes waits for your approval.':
     '連接模型內容協定伺服器，並在工作元件中使用其工具。讀取操作會直接執行，任何寫入操作都會等待你的核准。',
-  'Connect your Notion workspace to let Cloudflare OS search, read, and edit the pages and databases you share. Build agents that draft documents, organize notes, or manage database records.':
-    '連接 Notion 工作區，讓 Cloudflare OS 搜尋、讀取及編輯你共享的頁面與資料庫。可用於建立文件起草、筆記整理或資料庫記錄管理代理程式。',
-  'Connect your Slack account to give Cloudflare OS read-only access to the workspaces, channels, direct messages, and threads you can see. Build agents that summarize conversations, monitor channels, or search across your Slack history.':
-    '連接 Slack 帳戶，讓 Cloudflare OS 以唯讀方式存取你可見的工作區、頻道、私訊與討論串。可用於建立對話摘要、頻道監控或 Slack 歷史搜尋代理程式。',
-  'Connect your Spotify account so Cloudflare OS can search the catalog, read and edit your library and playlists, and control playback on your devices. Grant whole-account access or scope a Gadget to a single playlist.':
-    '連接 Spotify 帳戶，讓 Cloudflare OS 搜尋目錄、讀取及編輯媒體庫與播放清單，並控制裝置播放。可授予整個帳戶存取權，也可將工作元件限定於單一播放清單。',
-  'Connect your Supabase account so Cloudflare OS can run SQL against your project databases, explore schema, and inspect edge functions and storage for the projects you choose.':
-    '連接 Supabase 帳戶，讓 Cloudflare OS 在所選專案資料庫上執行 SQL、探索結構描述，並檢查邊緣函式與儲存空間。',
-  'Connect your ZoomInfo account so Cloudflare OS can resolve filter values, search companies, contacts, intent signals, scoops, and news, and enrich matched records into full detail. Search is free; enrichment consumes ZoomInfo credits. Build agents that assemble target account lists, research accounts, and prioritize outreach on buying signals.':
-    '連接 ZoomInfo 帳戶，讓 Cloudflare OS 解析篩選值，搜尋公司、聯絡人、意向訊號、獨家資訊與新聞，並將相符記錄豐富為完整資料。搜尋免費，資料豐富會消耗 ZoomInfo 額度。可用於建立目標帳戶清單、帳戶研究及依購買訊號優先接觸的代理程式。',
+  'Connect your Notion workspace to let Bug OS search, read, and edit the pages and databases you share. Build agents that draft documents, organize notes, or manage database records.':
+    '連接 Notion 工作區，讓 Bug OS 搜尋、讀取及編輯你共享的頁面與資料庫。可用於建立文件起草、筆記整理或資料庫記錄管理代理程式。',
+  'Connect your Slack account to give Bug OS read-only access to the workspaces, channels, direct messages, and threads you can see. Build agents that summarize conversations, monitor channels, or search across your Slack history.':
+    '連接 Slack 帳戶，讓 Bug OS 以唯讀方式存取你可見的工作區、頻道、私訊與討論串。可用於建立對話摘要、頻道監控或 Slack 歷史搜尋代理程式。',
+  'Connect your Spotify account so Bug OS can search the catalog, read and edit your library and playlists, and control playback on your devices. Grant whole-account access or scope a Gadget to a single playlist.':
+    '連接 Spotify 帳戶，讓 Bug OS 搜尋目錄、讀取及編輯媒體庫與播放清單，並控制裝置播放。可授予整個帳戶存取權，也可將工作元件限定於單一播放清單。',
+  'Connect your Supabase account so Bug OS can run SQL against your project databases, explore schema, and inspect edge functions and storage for the projects you choose.':
+    '連接 Supabase 帳戶，讓 Bug OS 在所選專案資料庫上執行 SQL、探索結構描述，並檢查邊緣函式與儲存空間。',
+  'Connect your ZoomInfo account so Bug OS can resolve filter values, search companies, contacts, intent signals, scoops, and news, and enrich matched records into full detail. Search is free; enrichment consumes ZoomInfo credits. Build agents that assemble target account lists, research accounts, and prioritize outreach on buying signals.':
+    '連接 ZoomInfo 帳戶，讓 Bug OS 解析篩選值，搜尋公司、聯絡人、意向訊號、獨家資訊與新聞，並將相符記錄豐富為完整資料。搜尋免費，資料豐富會消耗 ZoomInfo 額度。可用於建立目標帳戶清單、帳戶研究及依購買訊號優先接觸的代理程式。',
   'The Context Library lets you and your team author collections of context documents that agents can consult to learn how to perform tasks. It is always available — no connection needed.':
     '內容資料庫可供你與團隊編寫內容文件集合，代理程式可查閱這些內容來學習如何執行工作。它始終可用，無需連接。',
   'Register recurring and one-shot workspace tasks.': '註冊重複執行或單次執行的工作區工作。',

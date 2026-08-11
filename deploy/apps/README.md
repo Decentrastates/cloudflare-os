@@ -1,6 +1,6 @@
 # apps deployment
 
-This profile runs Cloudflare OS in Wrangler local `workerd` mode inside an isolated Docker
+This profile runs Bug OS in Wrangler local `workerd` mode inside an isolated Docker
 container on the `apps` server. The upstream project's native self-hosted production workflow is
 not yet documented as complete, so this remains a self-hosted evaluation deployment even though it
 is exposed through the production edge.

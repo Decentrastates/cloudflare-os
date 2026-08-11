@@ -6,7 +6,6 @@ import {
   ArrowsClockwise,
   Plus,
   CaretRight,
-  Hexagon,
   ShieldCheck,
   Plugs,
 } from '@phosphor-icons/react'
@@ -25,6 +24,8 @@ import { ConnectedAccountsSubscriber, GatekeeperVendorInfo } from '@gadgets/work
 import { useDocumentTitle } from '../useDocumentTitle'
 import { useSiteName } from '../ServerConfigContext'
 import { t } from '../i18n/core'
+import SiteLogo from '../components/SiteLogo'
+import BugLogo from '../components/BugLogo'
 
 export const Route = createFileRoute('/gatekeepers')({
   component: ConnectorsPage,
@@ -424,7 +425,9 @@ function ConnectorsHeroDiagram({
 
       <div className="absolute left-[268px] top-[58px] z-10 flex h-[52px] w-[172px] items-center gap-2 rounded-2xl border border-kumo-line bg-kumo-elevated pl-2 pr-4">
         <div className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-kumo-base text-kumo-brand">
-          <Hexagon size={17} weight="bold" />
+          <SiteLogo size={17}>
+            <BugLogo size={17} />
+          </SiteLogo>
         </div>
         <span className="relative -top-px min-w-0 truncate text-base leading-5 font-semibold tracking-tight text-kumo-default">
           {siteName}

@@ -6,7 +6,6 @@ import {
   Pencil,
   Check,
   X,
-  Hexagon,
   Blueprint,
   Trash,
   ArrowsOutSimple,
@@ -17,6 +16,7 @@ import { RpcStub, RpcTarget } from 'capnweb'
 import { useAuthenticatedApi } from './AuthContext'
 import UserMenu from './components/UserMenu'
 import SiteLogo from './components/SiteLogo'
+import BugLogo from './components/BugLogo'
 
 import {
   GadgetClient,
@@ -1331,7 +1331,7 @@ export default function GadgetEditor() {
             className="flex-shrink-0 hover:opacity-80 transition-opacity"
           >
             <SiteLogo size={22}>
-              <Hexagon size={22} className="text-kumo-brand" weight="bold" />
+              <BugLogo size={22} className="text-kumo-brand" />
             </SiteLogo>
           </Link>
 
