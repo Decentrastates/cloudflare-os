@@ -4,17 +4,21 @@ ENV PNPM_HOME=/pnpm
 ENV PATH=/pnpm:$PATH
 
 RUN corepack enable \
-    && corepack prepare pnpm@11.17.0 --activate
+    && corepack prepare pnpm@11.17.0 --activate \
+    && pnpm config set fetch-timeout 300000 \
+    && pnpm config set fetch-retries 5
 
 WORKDIR /app
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-RUN pnpm fetch --frozen-lockfile
+RUN --mount=type=cache,id=bug-os-pnpm-store,target=/root/.local/share/pnpm/store \
+    pnpm fetch --frozen-lockfile
 
 COPY . .
 
-RUN pnpm install --offline --frozen-lockfile \
+RUN --mount=type=cache,id=bug-os-pnpm-store,target=/root/.local/share/pnpm/store \
+    pnpm install --offline --frozen-lockfile \
     && pnpm --filter @gadgets/typed-storage build \
     && pnpm --filter @gadgets/workshop-frontend exec vite build \
     && cp deploy/auto-macmini/wrangler.container.jsonc wrangler.jsonc \
