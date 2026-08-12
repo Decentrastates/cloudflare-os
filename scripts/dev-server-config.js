@@ -24,3 +24,25 @@ export function getWranglerPortFromBackendHost(backendHost) {
 
   return url.port;
 }
+
+export function getGatekeeperBaseUrl(publicBaseUrl, gatekeeperName) {
+  if (publicBaseUrl === undefined || !publicBaseUrl.trim()) return null;
+
+  const shortName = gatekeeperName.replace(/^gatekeeper-/, "");
+  return `${publicBaseUrl.trim().replace(/\/+$/, "")}/gatekeeper/${shortName}`;
+}
+
+export function createGatekeeperDevConfig(sourceConfig, gatekeeper, publicBaseUrl) {
+  const config = {
+    ...sourceConfig,
+    build: { ...sourceConfig.build, cwd: gatekeeper.dir },
+  };
+  if (sourceConfig.vars !== undefined) config.vars = { ...sourceConfig.vars };
+
+  const baseUrl = getGatekeeperBaseUrl(publicBaseUrl, gatekeeper.name);
+  if (baseUrl !== null) {
+    config.vars = config.vars || {};
+    config.vars.BASE_URL = baseUrl;
+  }
+  return config;
+}

@@ -15,7 +15,10 @@ import { execFileSync, spawn } from "node:child_process";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parse } from "jsonc-parser";
-import { getWranglerPortFromBackendHost } from "./scripts/dev-server-config.js";
+import {
+  createGatekeeperDevConfig,
+  getWranglerPortFromBackendHost,
+} from "./scripts/dev-server-config.js";
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
 const PACKAGES_DIR = join(ROOT, "packages");
@@ -202,8 +205,9 @@ const PASSTHROUGH_GATEKEEPER_VARS = {
 
 for (const gk of gatekeepers) {
   const srcPath = join(gk.dir, "wrangler.jsonc");
-  const config = parse(readFileSync(srcPath, "utf8"));
-  config.build = { ...config.build, cwd: gk.dir };
+  const sourceConfig = parse(readFileSync(srcPath, "utf8"));
+  const config = createGatekeeperDevConfig(
+      sourceConfig, gk, process.env.PUBLIC_BASE_URL);
 
   const shared = SHARED_GATEKEEPER_CREDS[gk.name];
   if (shared && process.env[shared.id] && process.env[shared.secret]) {
