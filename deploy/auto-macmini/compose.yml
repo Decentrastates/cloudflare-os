@@ -9,6 +9,7 @@ services:
     init: true
     environment:
       CLOUDFLARE_OS_DISABLE_WATCHERS: "true"
+      PUBLIC_BASE_URL: "http://192.168.3.36:8787"
       HOME: /home/node
     ports:
       - "8787:8787"
