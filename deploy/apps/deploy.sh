@@ -93,10 +93,13 @@ docker buildx build \
 "${SSH[@]}" "test ! -e '$REMOTE_RELEASE' && mkdir -p '$REMOTE_RELEASE' '$REMOTE_SHARED' && chmod 700 '$REMOTE_SHARED'"
 
 if [ -n "$LOCAL_OAUTH_ENV_FILE" ]; then
+  REMOTE_OAUTH_INCOMING="$REMOTE_SHARED/oauth.env.incoming.$RELEASE_ID"
   rsync -az \
     -e "ssh -o BatchMode=yes -J $DEPLOY_JUMP" \
-    "$LOCAL_OAUTH_ENV_FILE" "$DEPLOY_TARGET:$REMOTE_SHARED/oauth.env.incoming"
-  "${SSH[@]}" "chmod 600 '$REMOTE_SHARED/oauth.env.incoming'"
+    "$LOCAL_OAUTH_ENV_FILE" "$DEPLOY_TARGET:$REMOTE_OAUTH_INCOMING"
+  "${SSH[@]}" "chmod 600 '$REMOTE_OAUTH_INCOMING'"
+else
+  REMOTE_OAUTH_INCOMING=""
 fi
 
 rsync -az \
@@ -109,7 +112,8 @@ rsync -az \
   "$IMAGE_ARCHIVE" "$DEPLOY_TARGET:$REMOTE_SHARED/$RELEASE_ID.tar"
 
 "${SSH[@]}" "bash -s" -- \
-  "$REMOTE_RELEASE" "$REMOTE_SHARED" "$COMPOSE_FILE" "$HEALTH_URL" "$REVISION" "$RELEASE_ID" <<'REMOTE_DEPLOY'
+  "$REMOTE_RELEASE" "$REMOTE_SHARED" "$COMPOSE_FILE" "$HEALTH_URL" "$REVISION" \
+  "$RELEASE_ID" "$REMOTE_OAUTH_INCOMING" <<'REMOTE_DEPLOY'
 set -euo pipefail
 release=$1
 shared=$2
@@ -117,6 +121,13 @@ compose_file=$3
 health_url=$4
 revision=$5
 release_id=$6
+oauth_incoming=$7
+cleanup_incoming() {
+  if [ -n "$oauth_incoming" ]; then
+    rm -f "$oauth_incoming"
+  fi
+}
+trap cleanup_incoming EXIT
 runtime_env="$shared/runtime.env"
 credentials="$shared/admin-credentials"
 image_archive="$shared/$release_id.tar"
@@ -184,7 +195,7 @@ rollback() {
   if [ "$oauth_changed" = true ]; then
     restore_oauth_env "$oauth_env"
   fi
-  rm -f "$oauth_env.incoming"
+  cleanup_incoming
   if [ "$rollback_ready" = true ] && \
       docker image inspect cloudflare-os-apps:rollback >/dev/null 2>&1; then
     if [ "$stack_replaced" = true ]; then
@@ -212,10 +223,10 @@ rollback_on_error() {
 }
 trap rollback_on_error ERR
 
-if [ -f "$oauth_env.incoming" ]; then
+if [ -n "$oauth_incoming" ] && [ -f "$oauth_incoming" ]; then
   oauth_changed=true
-  install_oauth_env "$oauth_env.incoming" "$oauth_env"
-  rm -f "$oauth_env.incoming"
+  install_oauth_env "$oauth_incoming" "$oauth_env"
+  cleanup_incoming
 fi
 
 docker load --input "$image_archive"

@@ -89,17 +89,22 @@ describe("self-hosted OAuth configuration", () => {
         autoRemote,
         "trap rollback_deployment ERR",
         'docker compose -f "$compose_file" build');
+    assert.match(autoRemote, /\[ -n "\$oauth_incoming" \] && \[ -f "\$oauth_incoming" \]/);
+    assert.doesNotMatch(autoRemote, /\[ -f "\$oauth_env\.incoming" \]/);
     assert.ok(autoRemote.lastIndexOf("trap - ERR") >
       autoRemote.indexOf("if ! wait_for_health"));
 
     assertOrdered(
         appsDeploy,
         "trap rollback_on_error ERR",
-        'install_oauth_env "$oauth_env.incoming"');
+        'install_oauth_env "$oauth_incoming"');
     assertOrdered(
         appsDeploy,
         "trap rollback_on_error ERR",
         'docker load --input "$image_archive"');
+    assert.match(appsDeploy, /oauth\.env\.incoming\.\$RELEASE_ID/);
+    assert.match(appsDeploy, /\[ -n "\$oauth_incoming" \] && \[ -f "\$oauth_incoming" \]/);
+    assert.doesNotMatch(appsDeploy, /\[ -f "\$oauth_env\.incoming" \]/);
     assert.ok(appsDeploy.lastIndexOf("trap - ERR") >
       appsDeploy.indexOf('"${compose[@]}" up -d --no-build'));
   });

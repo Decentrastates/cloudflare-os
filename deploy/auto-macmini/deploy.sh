@@ -6,6 +6,8 @@ DEPLOY_TARGET="${DEPLOY_TARGET:-aos@192.168.3.36}"
 REMOTE_DIRECTORY="${REMOTE_DIRECTORY:-/Users/aos/cloudflare-os}"
 LOCAL_OAUTH_ENV_FILE="${OAUTH_ENV_FILE:-}"
 REMOTE_OAUTH_ENV_FILE="${REMOTE_OAUTH_ENV_FILE:-/Users/aos/.config/bug-os/auto-macmini-oauth.env}"
+OAUTH_UPLOAD_ID="$(date -u +%Y%m%dT%H%M%SZ)-$$"
+REMOTE_OAUTH_INCOMING=""
 COMPOSE_FILE="deploy/auto-macmini/compose.yml"
 
 # shellcheck source=../oauth-env.sh
@@ -33,17 +35,26 @@ rsync -az \
 
 if [ -n "$LOCAL_OAUTH_ENV_FILE" ]; then
   remote_oauth_dir="$(dirname "$REMOTE_OAUTH_ENV_FILE")"
+  REMOTE_OAUTH_INCOMING="$REMOTE_OAUTH_ENV_FILE.incoming.$OAUTH_UPLOAD_ID"
   ssh -o BatchMode=yes "$DEPLOY_TARGET" "mkdir -p '$remote_oauth_dir' && chmod 700 '$remote_oauth_dir'"
-  rsync -az "$LOCAL_OAUTH_ENV_FILE" "$DEPLOY_TARGET:$REMOTE_OAUTH_ENV_FILE.incoming"
-  ssh -o BatchMode=yes "$DEPLOY_TARGET" "chmod 600 '$REMOTE_OAUTH_ENV_FILE.incoming'"
+  rsync -az "$LOCAL_OAUTH_ENV_FILE" "$DEPLOY_TARGET:$REMOTE_OAUTH_INCOMING"
+  ssh -o BatchMode=yes "$DEPLOY_TARGET" "chmod 600 '$REMOTE_OAUTH_INCOMING'"
 fi
 
 ssh -o BatchMode=yes "$DEPLOY_TARGET" "bash -s" -- \
-  "$REMOTE_DIRECTORY" "$REMOTE_OAUTH_ENV_FILE" "$COMPOSE_FILE" <<'REMOTE_DEPLOY'
+  "$REMOTE_DIRECTORY" "$REMOTE_OAUTH_ENV_FILE" "$COMPOSE_FILE" \
+  "$REMOTE_OAUTH_INCOMING" <<'REMOTE_DEPLOY'
 set -eEuo pipefail
 remote_directory=$1
 oauth_env=$2
 compose_file=$3
+oauth_incoming=$4
+cleanup_incoming() {
+  if [ -n "$oauth_incoming" ]; then
+    rm -f "$oauth_incoming"
+  fi
+}
+trap cleanup_incoming EXIT
 export PATH=/usr/local/bin:/usr/bin:/bin
 export CLOUDFLARE_OS_OAUTH_ENV_FILE="$oauth_env"
 cd "$remote_directory"
@@ -72,7 +83,7 @@ rollback_deployment() {
   if [ "$oauth_changed" = true ]; then
     restore_oauth_env "$oauth_env"
   fi
-  rm -f "$oauth_env.incoming"
+  cleanup_incoming
   if [ "$rollback_ready" = true ] && \
       docker image inspect cloudflare-os-local:rollback >/dev/null 2>&1; then
     if [ "$stack_replaced" = true ]; then
@@ -88,10 +99,10 @@ rollback_deployment() {
 }
 trap rollback_deployment ERR
 
-if [ -f "$oauth_env.incoming" ]; then
+if [ -n "$oauth_incoming" ] && [ -f "$oauth_incoming" ]; then
   oauth_changed=true
-  install_oauth_env "$oauth_env.incoming" "$oauth_env"
-  rm -f "$oauth_env.incoming"
+  install_oauth_env "$oauth_incoming" "$oauth_env"
+  cleanup_incoming
 fi
 
 current_health=none
