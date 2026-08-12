@@ -84,6 +84,9 @@ describe("self-hosted OAuth configuration", () => {
 
     const autoRemote = autoDeploy.slice(autoDeploy.indexOf("<<'REMOTE_DEPLOY'"));
     assert.match(autoDeploy, /ssh -o BatchMode=yes .* "bash -s" --/);
+    assert.match(autoDeploy, /REMOTE_OAUTH_INCOMING="\$NO_OAUTH_UPDATE"/);
+    assert.match(autoRemote, /if \[ "\$oauth_incoming" = __NO_OAUTH_UPDATE__ \]/);
+    assert.match(autoDeploy, /trap cleanup_remote_incoming EXIT/);
     assertOrdered(autoRemote, "trap rollback_deployment ERR", "install_oauth_env");
     assertOrdered(
         autoRemote,
@@ -103,6 +106,9 @@ describe("self-hosted OAuth configuration", () => {
         "trap rollback_on_error ERR",
         'docker load --input "$image_archive"');
     assert.match(appsDeploy, /oauth\.env\.incoming\.\$RELEASE_ID/);
+    assert.match(appsDeploy, /REMOTE_OAUTH_INCOMING="\$NO_OAUTH_UPDATE"/);
+    assert.match(appsDeploy, /if \[ "\$oauth_incoming" = __NO_OAUTH_UPDATE__ \]/);
+    assert.match(appsDeploy, /oauth_upload_pending=true/);
     assert.match(appsDeploy, /\[ -n "\$oauth_incoming" \] && \[ -f "\$oauth_incoming" \]/);
     assert.doesNotMatch(appsDeploy, /\[ -f "\$oauth_env\.incoming" \]/);
     assert.ok(appsDeploy.lastIndexOf("trap - ERR") >

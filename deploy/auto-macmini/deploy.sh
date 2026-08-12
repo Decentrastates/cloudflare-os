@@ -7,8 +7,18 @@ REMOTE_DIRECTORY="${REMOTE_DIRECTORY:-/Users/aos/cloudflare-os}"
 LOCAL_OAUTH_ENV_FILE="${OAUTH_ENV_FILE:-}"
 REMOTE_OAUTH_ENV_FILE="${REMOTE_OAUTH_ENV_FILE:-/Users/aos/.config/bug-os/auto-macmini-oauth.env}"
 OAUTH_UPLOAD_ID="$(date -u +%Y%m%dT%H%M%SZ)-$$"
-REMOTE_OAUTH_INCOMING=""
+NO_OAUTH_UPDATE="__NO_OAUTH_UPDATE__"
+REMOTE_OAUTH_INCOMING="$NO_OAUTH_UPDATE"
+oauth_upload_pending=false
 COMPOSE_FILE="deploy/auto-macmini/compose.yml"
+
+cleanup_remote_incoming() {
+  if [ "$oauth_upload_pending" = true ]; then
+    ssh -o BatchMode=yes "$DEPLOY_TARGET" \
+      "rm -f '$REMOTE_OAUTH_INCOMING'" >/dev/null 2>&1 || true
+  fi
+}
+trap cleanup_remote_incoming EXIT
 
 # shellcheck source=../oauth-env.sh
 . "$PROJECT_ROOT/deploy/oauth-env.sh"
@@ -38,6 +48,7 @@ if [ -n "$LOCAL_OAUTH_ENV_FILE" ]; then
   REMOTE_OAUTH_INCOMING="$REMOTE_OAUTH_ENV_FILE.incoming.$OAUTH_UPLOAD_ID"
   ssh -o BatchMode=yes "$DEPLOY_TARGET" "mkdir -p '$remote_oauth_dir' && chmod 700 '$remote_oauth_dir'"
   rsync -az "$LOCAL_OAUTH_ENV_FILE" "$DEPLOY_TARGET:$REMOTE_OAUTH_INCOMING"
+  oauth_upload_pending=true
   ssh -o BatchMode=yes "$DEPLOY_TARGET" "chmod 600 '$REMOTE_OAUTH_INCOMING'"
 fi
 
@@ -49,6 +60,9 @@ remote_directory=$1
 oauth_env=$2
 compose_file=$3
 oauth_incoming=$4
+if [ "$oauth_incoming" = __NO_OAUTH_UPDATE__ ]; then
+  oauth_incoming=""
+fi
 cleanup_incoming() {
   if [ -n "$oauth_incoming" ]; then
     rm -f "$oauth_incoming"

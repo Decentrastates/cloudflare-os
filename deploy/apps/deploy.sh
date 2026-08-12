@@ -14,6 +14,9 @@ REMOTE_SHARED="$REMOTE_BASE/shared"
 BUILD_CONTEXT="$(mktemp -d "${TMPDIR:-/tmp}/cloudflare-os-apps.XXXXXX")"
 IMAGE_ARCHIVE="$BUILD_CONTEXT/cloudflare-os-apps.tar"
 LOCAL_OAUTH_ENV_FILE="${OAUTH_ENV_FILE:-}"
+NO_OAUTH_UPDATE="__NO_OAUTH_UPDATE__"
+REMOTE_OAUTH_INCOMING="$NO_OAUTH_UPDATE"
+oauth_upload_pending=false
 
 # shellcheck source=../oauth-env.sh
 . "$PROJECT_ROOT/deploy/oauth-env.sh"
@@ -28,6 +31,9 @@ fi
 
 cleanup() {
   rm -rf "$BUILD_CONTEXT"
+  if [ "$oauth_upload_pending" = true ]; then
+    "${SSH[@]}" "rm -f '$REMOTE_OAUTH_INCOMING'" >/dev/null 2>&1 || true
+  fi
 }
 trap cleanup EXIT
 
@@ -97,9 +103,8 @@ if [ -n "$LOCAL_OAUTH_ENV_FILE" ]; then
   rsync -az \
     -e "ssh -o BatchMode=yes -J $DEPLOY_JUMP" \
     "$LOCAL_OAUTH_ENV_FILE" "$DEPLOY_TARGET:$REMOTE_OAUTH_INCOMING"
+  oauth_upload_pending=true
   "${SSH[@]}" "chmod 600 '$REMOTE_OAUTH_INCOMING'"
-else
-  REMOTE_OAUTH_INCOMING=""
 fi
 
 rsync -az \
@@ -122,6 +127,9 @@ health_url=$4
 revision=$5
 release_id=$6
 oauth_incoming=$7
+if [ "$oauth_incoming" = __NO_OAUTH_UPDATE__ ]; then
+  oauth_incoming=""
+fi
 cleanup_incoming() {
   if [ -n "$oauth_incoming" ]; then
     rm -f "$oauth_incoming"
