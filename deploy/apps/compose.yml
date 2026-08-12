@@ -9,6 +9,9 @@ services:
     container_name: cloudflare-os-apps
     restart: unless-stopped
     init: true
+    env_file:
+      - path: "${CLOUDFLARE_OS_OAUTH_ENV_FILE:-/dev/null}"
+        required: false
     environment:
       CLOUDFLARE_OS_DISABLE_WATCHERS: "true"
       CLOUDFLARE_OS_ADMINS: "${CLOUDFLARE_OS_ADMINS:?set in the protected runtime env file}"

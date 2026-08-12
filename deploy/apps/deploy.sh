@@ -13,6 +13,18 @@ REMOTE_RELEASE="$REMOTE_BASE/releases/$RELEASE_ID"
 REMOTE_SHARED="$REMOTE_BASE/shared"
 BUILD_CONTEXT="$(mktemp -d "${TMPDIR:-/tmp}/cloudflare-os-apps.XXXXXX")"
 IMAGE_ARCHIVE="$BUILD_CONTEXT/cloudflare-os-apps.tar"
+LOCAL_OAUTH_ENV_FILE="${OAUTH_ENV_FILE:-}"
+
+# shellcheck source=../oauth-env.sh
+. "$PROJECT_ROOT/deploy/oauth-env.sh"
+
+if [ -n "$LOCAL_OAUTH_ENV_FILE" ] && [ ! -f "$LOCAL_OAUTH_ENV_FILE" ]; then
+  echo "OAuth environment file not found: $LOCAL_OAUTH_ENV_FILE" >&2
+  exit 1
+fi
+if [ -n "$LOCAL_OAUTH_ENV_FILE" ]; then
+  assert_oauth_source_outside_project "$LOCAL_OAUTH_ENV_FILE" "$PROJECT_ROOT"
+fi
 
 cleanup() {
   rm -rf "$BUILD_CONTEXT"
@@ -80,6 +92,13 @@ docker buildx build \
 
 "${SSH[@]}" "test ! -e '$REMOTE_RELEASE' && mkdir -p '$REMOTE_RELEASE' '$REMOTE_SHARED' && chmod 700 '$REMOTE_SHARED'"
 
+if [ -n "$LOCAL_OAUTH_ENV_FILE" ]; then
+  rsync -az \
+    -e "ssh -o BatchMode=yes -J $DEPLOY_JUMP" \
+    "$LOCAL_OAUTH_ENV_FILE" "$DEPLOY_TARGET:$REMOTE_SHARED/oauth.env.incoming"
+  "${SSH[@]}" "chmod 600 '$REMOTE_SHARED/oauth.env.incoming'"
+fi
+
 rsync -az \
   -e "ssh -o BatchMode=yes -J $DEPLOY_JUMP" \
   --exclude cloudflare-os-apps.tar \
@@ -103,6 +122,7 @@ credentials="$shared/admin-credentials"
 image_archive="$shared/$release_id.tar"
 bootstrap_complete="$shared/bootstrap-complete"
 bootstrap_pending="$shared/bootstrap-pending"
+oauth_env="$shared/oauth.env"
 
 legacy_deployment=false
 if docker container inspect cloudflare-os-apps >/dev/null 2>&1 || \
@@ -122,10 +142,13 @@ set -a
 # shellcheck disable=SC1090
 . "$credentials"
 set +a
-printf 'CLOUDFLARE_OS_ADMINS=["%s"]\n' "$CLOUDFLARE_OS_BOOTSTRAP_USERNAME" > "$runtime_env"
+printf 'CLOUDFLARE_OS_ADMINS=["%s"]\nCLOUDFLARE_OS_OAUTH_ENV_FILE=%s\n' \
+  "$CLOUDFLARE_OS_BOOTSTRAP_USERNAME" "$shared/oauth.env" > "$runtime_env"
 chmod 600 "$credentials" "$runtime_env"
 
 cd "$release"
+# shellcheck source=../oauth-env.sh
+. deploy/oauth-env.sh
 compose=(docker compose --env-file "$runtime_env" -f "$compose_file")
 
 current_health=none
@@ -135,11 +158,10 @@ fi
 if [ "$current_health" = healthy ]; then
   running_image=$(docker inspect cloudflare-os-apps --format '{{.Image}}')
   docker tag "$running_image" cloudflare-os-apps:rollback
+  rollback_ready=true
+else
+  rollback_ready=false
 fi
-
-docker load --input "$image_archive"
-rm -f "$image_archive"
-docker tag "cloudflare-os-apps:$revision" cloudflare-os-apps:latest
 
 wait_for_health() {
   for _ in $(seq 1 30); do
@@ -154,9 +176,20 @@ wait_for_health() {
   return 1
 }
 
+oauth_changed=false
+stack_replaced=false
 rollback() {
-  "${compose[@]}" down || true
-  if docker image inspect cloudflare-os-apps:rollback >/dev/null 2>&1; then
+  trap - ERR
+  set +e
+  if [ "$oauth_changed" = true ]; then
+    restore_oauth_env "$oauth_env"
+  fi
+  rm -f "$oauth_env.incoming"
+  if [ "$rollback_ready" = true ] && \
+      docker image inspect cloudflare-os-apps:rollback >/dev/null 2>&1; then
+    if [ "$stack_replaced" = true ]; then
+      "${compose[@]}" down || true
+    fi
     docker tag cloudflare-os-apps:rollback cloudflare-os-apps:latest
     "${compose[@]}" up -d --no-build
     if ! wait_for_health; then
@@ -165,10 +198,31 @@ rollback() {
     fi
     echo "Previous Bug OS image restored and verified." >&2
   else
-    echo "First deployment failed; the unhealthy stack was removed." >&2
+    if [ "$stack_replaced" = true ]; then
+      "${compose[@]}" down || true
+    fi
+    echo "Deployment failed before a verified rollback image was available." >&2
   fi
 }
 
+rollback_on_error() {
+  status=$?
+  rollback
+  exit "$status"
+}
+trap rollback_on_error ERR
+
+if [ -f "$oauth_env.incoming" ]; then
+  oauth_changed=true
+  install_oauth_env "$oauth_env.incoming" "$oauth_env"
+  rm -f "$oauth_env.incoming"
+fi
+
+docker load --input "$image_archive"
+rm -f "$image_archive"
+docker tag "cloudflare-os-apps:$revision" cloudflare-os-apps:latest
+
+stack_replaced=true
 "${compose[@]}" up -d --no-build
 
 if ! wait_for_health; then
@@ -240,6 +294,10 @@ for url in \
 done
 
 ln -sfn "$release" "$shared/current-release"
+trap - ERR
+if [ "$oauth_changed" = true ]; then
+  rm -f "$oauth_env.rollback"
+fi
 "${compose[@]}" ps
 curl -fsS -I --connect-timeout 3 --max-time 10 "$health_url" | sed -n '1,8p'
 echo "Application phase healthy; edge activation is still pending."
