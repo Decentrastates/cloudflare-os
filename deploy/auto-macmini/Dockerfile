@@ -1,4 +1,4 @@
-FROM node:22-bookworm-slim
+FROM node:24.19.0-bookworm-slim
 
 ENV PNPM_HOME=/pnpm
 ENV PATH=/pnpm:$PATH
@@ -32,4 +32,4 @@ EXPOSE 8787
 
 ENTRYPOINT ["deploy/auto-macmini/entrypoint.sh"]
 
-CMD ["node", "run-dev-server.js", "--serve-frontend-assets"]
+CMD ["node", "scripts/run-dev-server.ts", "--serve-frontend-assets"]

@@ -84,7 +84,7 @@ export default function SignupPage({ rpcStub }: SignupPageProps) {
       return (
         <div
           role="alert"
-          className="min-h-screen flex flex-col items-center justify-center gap-4 bg-kumo-base px-4"
+          className="flex h-full min-h-0 flex-col items-center justify-center gap-4 overflow-y-auto bg-kumo-base px-4 py-8"
         >
           <p className="text-sm text-kumo-danger text-center">
             {t("Couldn't load deployment settings.")}</p>
@@ -93,7 +93,7 @@ export default function SignupPage({ rpcStub }: SignupPageProps) {
       );
     }
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-kumo-base px-4">
+      <div className="flex h-full min-h-0 flex-col items-center justify-center gap-4 overflow-y-auto bg-kumo-base px-4 py-8">
         <Loader size="lg" />
         <p className="text-sm text-kumo-subtle text-center">
           {connectionLost ? t("Can't reach the server. Retrying…") : t("Loading…")}
@@ -108,7 +108,7 @@ export default function SignupPage({ rpcStub }: SignupPageProps) {
   const passwordAuthEnabled = serverConfig.passwordAuthEnabled && signupsEnabled;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-kumo-base px-4 relative overflow-hidden">
+    <div className="relative flex h-full min-h-0 flex-col items-center justify-start overflow-y-auto bg-kumo-base px-4 py-8">
       <LanguageSelector className="absolute right-4 top-4 z-10" />
       {/* Dot grid — fades from top to bottom */}
       <div
@@ -124,7 +124,7 @@ export default function SignupPage({ rpcStub }: SignupPageProps) {
         }}
       />
 
-      <div className="w-full max-w-sm relative">
+      <div className="relative my-auto w-full max-w-sm">
         {/* Logo */}
         <div className="flex flex-col items-center mb-8">
           <SiteLogo size={40} className="mb-3">
@@ -152,7 +152,8 @@ export default function SignupPage({ rpcStub }: SignupPageProps) {
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
               <Input
-                label={t("Username")}
+                className="w-full"
+                label={t('Username')}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 autoFocus
@@ -163,6 +164,7 @@ export default function SignupPage({ rpcStub }: SignupPageProps) {
               />
 
               <Input
+                className="w-full"
                 type="password"
                 label={t("Password")}
                 value={password}
@@ -174,6 +176,7 @@ export default function SignupPage({ rpcStub }: SignupPageProps) {
               />
 
               <Input
+                className="w-full"
                 type="password"
                 label={t("Confirm Password")}
                 value={confirmPassword}

@@ -5,9 +5,11 @@ import ComingSoonPreview from '../components/ComingSoonPreview'
 import { useSiteName } from '../ServerConfigContext'
 import { t } from '../i18n/core'
 
-// Context & Skills. The knowledge/skills surface isn't built into the rail yet — agents read
-// curated collections of documents (context) and reusable skills. Until then this page shows a
-// frosted design mock so the nav entry has a stable, on-language target.
+/**
+ * Context & Skills. The knowledge/skills surface isn't built into the rail yet — agents read
+ * curated collections of documents (context) and reusable skills. Until then this page shows a
+ * frosted design mock so the nav entry has a stable, on-language target.
+ */
 export const Route = createFileRoute('/context')({
   component: ContextPage,
 })
@@ -60,9 +62,9 @@ function ContextPage() {
   useDocumentTitle(t("Context & Skills"))
   const siteName = useSiteName()
   return (
-    <div className="mx-auto flex h-full w-full max-w-4xl flex-col px-6 sm:px-10">
-      <header className="px-3 pb-4 pt-10">
-        <h1 className="text-2xl font-semibold tracking-tight text-kumo-default">{t("Context & Skills")}</h1>
+    <div className="mx-auto flex h-full w-full max-w-4xl flex-col px-3 sm:px-10">
+      <header className="px-3 pb-4 pt-6 sm:pt-10">
+        <h1 className="text-2xl font-semibold tracking-tight text-kumo-default">{t('Context & Skills')}</h1>
         <p className="mt-1 text-[13px] leading-[18px] tracking-[-0.25px] text-kumo-subtle">
           {t("Curated collections of knowledge your agents read, plus reusable skills they can apply.")}</p>
       </header>

@@ -77,8 +77,8 @@ export default function ConnectAccountModal({
 
   return (
     <Dialog.Root open={visible} onOpenChange={(open) => { if (!open) onCancel() }}>
-      <Dialog className="p-6" size="base">
-        <Dialog.Title className="text-lg font-semibold mb-4">{t("Connect Account")}</Dialog.Title>
+      <Dialog className="responsive-dialog overflow-y-auto p-6" size="base">
+        <Dialog.Title className="text-lg font-semibold mb-4">{t('Connect Account')}</Dialog.Title>
         {vendorsLoading ? (
           <div className="text-center py-8">
             <Loader />

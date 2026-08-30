@@ -6,6 +6,7 @@ import { createRateLimitedCapability } from './rateLimitedCapability'
 import { useTheme } from './ThemeContext'
 import { forwardTrustedFrameError } from './errorReporting'
 import { t } from './i18n/core'
+import { useI18n } from './i18n/I18nContext'
 
 // Upper bound on iframe height. Sized to leave room for a typical configurator form plus an open
 // autocomplete popup, while staying within a reasonable viewport even on short screens.
@@ -29,6 +30,7 @@ class ResourceConfiguratorHostImpl extends RpcTarget implements ResourceConfigur
     private readonly onSelectionReady: (ready: boolean) => void,
     private readonly onScroll: (deltaX: number, deltaY: number) => void,
     private readonly getInitialResourceImpl: () => { resourceUrl: string; resourceUrlPattern: string } | null,
+    private readonly locale: 'en' | 'zh-CN' | 'zh-TW',
   ) {
     super()
     // The configurator form is short-lived, so a burst past the per-minute cap is always a bug:
@@ -49,6 +51,8 @@ class ResourceConfiguratorHostImpl extends RpcTarget implements ResourceConfigur
   async getInitialResource(): Promise<{ resourceUrl: string; resourceUrlPattern: string } | null> {
     return this.getInitialResourceImpl()
   }
+
+  async getLocale(): Promise<'en' | 'zh-CN' | 'zh-TW'> { return this.locale }
 
   resize(height: number, layoutHeight: number): void {
     this.onResize(height, layoutHeight)
@@ -75,13 +79,16 @@ export default function SandboxedResourceConfigurator({
   topOffset?: number,
   onCollectResourceUrlChange?: (collect: (() => Promise<string>) | null) => void,
   onSelectionReadyChange?: (ready: boolean | null) => void,
-  // When set, the configurator opens pre-filled to this concrete resource URL (e.g. supplied by an
-  // AI agent's connection request). `resourceUrlPattern` is this resource's pattern, used by the
-  // iframe runtime's fallback URL->values extraction.
+  /**
+   * When set, the configurator opens pre-filled to this concrete resource URL (e.g. supplied by an
+   * AI agent's connection request). `resourceUrlPattern` is this resource's pattern, used by the
+   * iframe runtime's fallback URL->values extraction.
+   */
   initialResourceUrl?: string,
   resourceUrlPattern?: string,
 }) {
   const { resolvedThemeMode } = useTheme()
+  const { locale } = useI18n()
   const placeholderRef = useRef<HTMLDivElement>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const rpcSessionRef = useRef<{ [Symbol.dispose]?(): void } | null>(null)
@@ -225,6 +232,7 @@ export default function SandboxedResourceConfigurator({
         clamp(Number(deltaY) || 0, -SCROLL_FORWARD_MAX_DELTA, SCROLL_FORWARD_MAX_DELTA),
       ),
       () => initialResourceRef.current,
+      locale,
     ))
     rpcSessionRef.current = iframe
     iframeRpcRef.current?.[Symbol.dispose]?.()
@@ -297,7 +305,7 @@ export default function SandboxedResourceConfigurator({
     setHeight(MIN_CONFIGURATOR_HEIGHT)
     setLayoutHeight(MIN_CONFIGURATOR_HEIGHT)
     updateFrameRect()
-  }, [frame.iframeHtml])
+  }, [frame.iframeHtml, locale])
 
   useEffect(() => {
     onCollectResourceUrlChange?.(collectResourceUrl)
@@ -380,12 +388,13 @@ export default function SandboxedResourceConfigurator({
       rpcSessionRef.current?.[Symbol.dispose]?.()
       rpcSessionRef.current = null
     }
-  }, [])
+  }, [locale])
 
   return (
     <>
       <div ref={placeholderRef} style={{ height: layoutHeight + topOffset }} />
       {frameRect && createPortal(<iframe
+        key={locale}
         ref={iframeRef}
         srcDoc={frame.iframeHtml}
         onLoad={handleIframeLoad}

@@ -3,6 +3,16 @@ export type UiLocale = 'en' | 'zh-CN' | 'zh-TW'
 type MetadataCatalog = Readonly<Record<string, string>>
 
 const zhCN: MetadataCatalog = {
+  'Sign in, use AI Gateway, and inspect Workers Observability': '登录、使用 AI Gateway 并检查 Workers 可观测性',
+  'Sign in with your Cloudflare account and use your own Cloudflare AI Gateway credits for usage beyond the free tier. You can also connect Workers Observability to inspect logs, invocations, traces, and aggregate metrics.': '使用 Cloudflare 账户登录，并在超出免费额度后使用您自己的 Cloudflare AI Gateway 额度。您还可以连接 Workers 可观测性，以检查日志、调用、追踪和汇总指标。',
+  'Draft replies, edit docs, read sheets, search Drive, manage calendars, analyze data': '起草回复、编辑文档、读取表格、搜索云端硬盘、管理日历并分析数据',
+  'Connect your Google account to give Bug OS access to Gmail, Google Docs, Google Sheets, Google Drive, Google Calendar, and BigQuery. Build agents that triage email, draft and edit documents, read spreadsheets, find files by metadata, find focus time, schedule meetings, or run analytics queries on your data.': '连接您的 Google 账户，让 Bug OS 访问 Gmail、Google 文档、Google 表格、Google 云端硬盘、Google 日历和 BigQuery。您可以构建代理来分类处理邮件、起草和编辑文档、读取电子表格、按元数据查找文件、寻找专注时间、安排会议或对数据运行分析查询。',
+  'Google Drive Account': 'Google 云端硬盘账户',
+  'Find files and folders anywhere this Google account can read in Drive, including shared drives. Full-text search examines indexed file content, descriptions, and OCR text; results contain metadata only.': '在此 Google 账户可读取的云端硬盘范围内查找文件和文件夹，包括共享云端硬盘。全文搜索会检查已索引的文件内容、说明和 OCR 文本；结果仅包含元数据。',
+  'Google Workspace Shared Drive': 'Google Workspace 共享云端硬盘',
+  'Find files and folders in one organization-owned shared drive.': '在组织拥有的指定共享云端硬盘中查找文件和文件夹。',
+  'Google Drive File': 'Google 云端硬盘文件',
+  'Read metadata for one Drive file.': '读取一个云端硬盘文件的元数据。',
   // Built-in output formats and their promoted blueprints.
   'App': '应用',
   'Apps': '应用',
@@ -160,6 +170,16 @@ const zhCN: MetadataCatalog = {
 }
 
 const zhTW: MetadataCatalog = {
+  'Sign in, use AI Gateway, and inspect Workers Observability': '登入、使用 AI Gateway 並檢查 Workers 可觀測性',
+  'Sign in with your Cloudflare account and use your own Cloudflare AI Gateway credits for usage beyond the free tier. You can also connect Workers Observability to inspect logs, invocations, traces, and aggregate metrics.': '使用 Cloudflare 帳戶登入，並在超出免費額度後使用您自己的 Cloudflare AI Gateway 額度。您也可以連接 Workers 可觀測性，以檢查日誌、呼叫、追蹤和彙總指標。',
+  'Draft replies, edit docs, read sheets, search Drive, manage calendars, analyze data': '起草回覆、編輯文件、讀取試算表、搜尋雲端硬碟、管理日曆並分析資料',
+  'Connect your Google account to give Bug OS access to Gmail, Google Docs, Google Sheets, Google Drive, Google Calendar, and BigQuery. Build agents that triage email, draft and edit documents, read spreadsheets, find files by metadata, find focus time, schedule meetings, or run analytics queries on your data.': '連接您的 Google 帳戶，讓 Bug OS 存取 Gmail、Google 文件、Google 試算表、Google 雲端硬碟、Google 日曆和 BigQuery。您可以建置代理來分類處理郵件、起草和編輯文件、讀取試算表、依中繼資料尋找檔案、尋找專注時間、安排會議或對資料執行分析查詢。',
+  'Google Drive Account': 'Google 雲端硬碟帳戶',
+  'Find files and folders anywhere this Google account can read in Drive, including shared drives. Full-text search examines indexed file content, descriptions, and OCR text; results contain metadata only.': '在此 Google 帳戶可讀取的雲端硬碟範圍內尋找檔案和資料夾，包括共用雲端硬碟。全文搜尋會檢查已建立索引的檔案內容、說明和 OCR 文字；結果僅包含中繼資料。',
+  'Google Workspace Shared Drive': 'Google Workspace 共用雲端硬碟',
+  'Find files and folders in one organization-owned shared drive.': '在組織擁有的指定共用雲端硬碟中尋找檔案和資料夾。',
+  'Google Drive File': 'Google 雲端硬碟檔案',
+  'Read metadata for one Drive file.': '讀取一個雲端硬碟檔案的中繼資料。',
   'App': '應用程式',
   'Apps': '應用程式',
   'Doc': '文件',

@@ -35,6 +35,7 @@ ssh -o BatchMode=yes "$DEPLOY_TARGET" "mkdir -p '$REMOTE_DIRECTORY'"
 
 rsync -az \
   --exclude .git \
+  --exclude .worktrees \
   --exclude .wrangler \
   --exclude '.dev.vars*' \
   --exclude '.env*' \

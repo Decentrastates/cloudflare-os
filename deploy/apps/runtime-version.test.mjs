@@ -16,7 +16,7 @@ const workerdPackageJson = wranglerRequire("workerd/package.json");
 test("self-hosted runtime pins Wrangler before the local D1 crash regression", () => {
   assert.equal(
     packageJson.devDependencies.wrangler,
-    "4.112.0",
+    "catalog:",
     "Wrangler 4.114+ can terminate the multi-worker local runtime on concurrent D1 writes",
   );
   assert.equal(wranglerPackageJson.version, "4.112.0");

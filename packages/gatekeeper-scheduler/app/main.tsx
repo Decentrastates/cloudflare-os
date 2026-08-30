@@ -1,28 +1,32 @@
 import { createRoot } from "react-dom/client";
 import { RpcTarget, newMessagePortRpcSession, type RpcStub } from "capnweb";
-import SchedulerPage, { type ScheduleManagementClient } from "./SchedulerPage";
+import type {
+  GatekeeperAppTheme,
+  GatekeeperAppThemeReceiver,
+} from "@gadgets/workshop-shared/theme";
+import type { ScheduleManagementClient } from "./SchedulerPage";
 import ErrorBoundary from "./ErrorBoundary";
 import { installErrorReporting, reportIssue } from "./error-reporting";
-import { applyThemeMode, type ResolvedThemeMode } from "./theme";
+import { applyAppTheme } from "./theme";
 import "./styles.css";
 
 installErrorReporting();
 
-class AppIframe extends RpcTarget {
-  setThemeMode(mode: ResolvedThemeMode): void {
-    applyThemeMode(mode);
+class AppIframe extends RpcTarget implements GatekeeperAppThemeReceiver {
+  setTheme(theme: GatekeeperAppTheme): void {
+    applyAppTheme(theme);
   }
 }
 
 interface HostCapability extends RpcTarget {
   readonly ui: RpcStub<ScheduleManagementClient>;
-  subscribeTheme(receiver: AppIframe): Promise<ResolvedThemeMode>;
+  subscribeTheme(receiver: GatekeeperAppThemeReceiver): Promise<GatekeeperAppTheme>;
   openWorkspace(workspaceId: string, gadgetId?: number): Promise<void>;
   resolveWorkspaceTitles(ids: string[]): Promise<(string | null)[]>;
   openPrompt(prompt: string): Promise<void>;
 }
 
-function main() {
+async function main() {
   const element = document.getElementById("root");
   if (!element) throw new Error("Missing Scheduler app root.");
 
@@ -30,10 +34,8 @@ function main() {
   window.parent.postMessage({ type: "handshake" }, "*", [port2]);
   const iframe = new AppIframe();
   const host = newMessagePortRpcSession<HostCapability>(port1, iframe);
-  host
-    .subscribeTheme(iframe)
-    .then(applyThemeMode)
-    .catch(() => {});
+  try { applyAppTheme(await host.subscribeTheme(iframe)); } catch {}
+  const { default: SchedulerPage } = await import('./SchedulerPage');
 
   createRoot(element, {
     onUncaughtError: (error) =>
@@ -54,4 +56,4 @@ function main() {
   );
 }
 
-main();
+void main();

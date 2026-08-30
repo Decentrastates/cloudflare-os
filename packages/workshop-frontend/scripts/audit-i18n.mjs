@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
-import ts from 'typescript'
+import ts from 'typescript6'
 
 const ATTRIBUTES = new Set([
   'aria-label', 'title', 'label', 'placeholder', 'description', 'alt',

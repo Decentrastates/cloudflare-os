@@ -11,6 +11,7 @@ import { useAuthenticatedApi } from '../../AuthContext'
 import type { GadgetMetadataWithTimestamps, OutputFormatOffer } from '@gadgets/workshop-shared/api'
 import { FormatGlyph } from '../format/FormatVisuals'
 import { createFromFormat } from '../format/useOutputFormats'
+import { isImeComposing } from '../../keyboardEvent'
 import { t } from '../../i18n/core'
 
 // A ⌘K command palette: jump to a workspace or a primary destination. Because it's keyboard-driven
@@ -312,6 +313,7 @@ export default function CommandPalette({
 
   const onKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
+      if (isImeComposing(e)) return
       if (e.key === 'ArrowDown') {
         e.preventDefault()
         setActiveIndex((i) => (flat.length ? (i + 1) % flat.length : 0))

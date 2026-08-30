@@ -1,3 +1,4 @@
+import { embeddedT as t } from "@gadgets/workshop-shared/embedded-ui-i18n";
 import { Button, Dialog, DropdownMenu, Input, InputArea, useKumoToastManager } from "@cloudflare/kumo";
 import {
   BookOpen,
@@ -67,7 +68,7 @@ import { markdown } from "@codemirror/lang-markdown";
 import { javascript } from "@codemirror/lang-javascript";
 import { json } from "@codemirror/lang-json";
 import { yaml } from "@codemirror/lang-yaml";
-import { tags as t } from "@lezer/highlight";
+import { tags as highlightTags } from "@lezer/highlight";
 import type { Extension } from "@codemirror/state";
 import { useContextApi, usePresentWhileOpen, useResolvedThemeMode } from "./bridge";
 import { extractDescription } from "../src/description-extractors";
@@ -257,7 +258,7 @@ function IconPickerButton({
         ref={btnRef}
         type="button"
         onClick={() => setOpen((o) => !o)}
-        title="Choose an icon"
+        title={t("Choose an icon")}
         className={
           inline
             ? "grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-kumo-tint text-[18px] leading-none text-kumo-subtle transition-colors hover:bg-kumo-fill"
@@ -310,12 +311,12 @@ function CollectionProvenance({ source }: { source: EnabledCollectionInfo["sourc
       className="flex w-52 items-center gap-1 whitespace-nowrap"
       title={
         isPublic
-          ? "Provided by your organization for everyone"
-          : "A collection you created"
+          ? t("Provided by your organization for everyone")
+          : t("A collection you created")
       }
     >
       {isPublic ? <Buildings size={11} /> : <User size={11} />}
-      {isPublic ? "Required by your organization" : "Created by you"}
+      {isPublic ? t("Required by your organization") : t("Created by you")}
     </span>
   );
 }
@@ -389,7 +390,7 @@ function CollectionRow({
             hasDescription ? "text-kumo-subtle" : "italic text-kumo-inactive"
           }`}
         >
-          {hasDescription ? collection.description : "No description"}
+          {hasDescription ? collection.description : t("No description")}
         </p>
       </div>
       {/* Fixed-width meta columns so rows line up like a table. */}
@@ -509,7 +510,7 @@ function FieldLabel({
   return (
     <label className="mb-1.5 flex items-center gap-1.5 text-[12px] leading-4 font-medium tracking-[-0.2px] text-kumo-subtle">
       <span>{children}</span>
-      {optional ? <span className="font-normal text-kumo-inactive">Optional</span> : null}
+      {optional ? <span className="font-normal text-kumo-inactive">{t("Optional")}</span> : null}
     </label>
   );
 }
@@ -570,7 +571,7 @@ function CollectionNameField({
 }) {
   return (
     <>
-      <FieldLabel>Name</FieldLabel>
+      <FieldLabel>{t("Name")}</FieldLabel>
       {/* Icon tile + name share one focus-within pill so the emoji reads as part of the input. */}
       <div className="flex items-center gap-2 rounded-xl border-2 border-kumo-line bg-kumo-base p-1.5 transition-[border-color,box-shadow] duration-150 ease-out focus-within:border-kumo-ring focus-within:ring-1 focus-within:ring-kumo-ring/15">
         <IconPickerButton value={icon} onChange={onIconChange} variant="inline" />
@@ -580,7 +581,7 @@ function CollectionNameField({
           onKeyDown={(e) => {
             if (e.key === "Enter") onEnter?.();
           }}
-          placeholder="A short name, e.g., Brand guidelines"
+          placeholder={t("A short name, e.g., Brand guidelines")}
           autoFocus={autoFocus}
           className="h-9 min-w-0 flex-1 appearance-none border-0 bg-transparent p-0 pr-2 text-[13px] leading-[18px] tracking-[-0.25px] text-kumo-default outline-none placeholder:text-kumo-inactive"
         />
@@ -598,12 +599,12 @@ function CollectionDescriptionField({
 }) {
   return (
     <>
-      <FieldLabel optional>Description</FieldLabel>
+      <FieldLabel optional>{t("Description")}</FieldLabel>
       {/* `ring-0` drops Kumo InputArea's base ring so it matches the name pill's single border. */}
       <WorkshopInputArea
         value={value}
         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => onChange(e.target.value)}
-        placeholder="What it contains and when to use it, e.g., voice and tone rules for customer-facing writing"
+        placeholder={t("What it contains and when to use it, e.g., voice and tone rules for customer-facing writing")}
         rows={4}
         className="w-full border-2 ring-0 !rounded-xl transition-[border-color,box-shadow] duration-150 ease-out"
       />
@@ -632,7 +633,7 @@ function ModalHeader({
       </div>
       <Dialog.Close
         render={(props) => (
-          <WorkshopIconButton {...props} aria-label="Close">
+          <WorkshopIconButton {...props} aria-label={t("Close")}>
             <X size={18} />
           </WorkshopIconButton>
         )}
@@ -652,17 +653,15 @@ function DeletePermanentlyDescription({
 }) {
   return (
     <>
-      This permanently deletes{" "}
+      {t("This permanently deletes")}{" "}
       <span className="font-medium text-kumo-default">{name}</span>
       {documents !== undefined ? (
         <>
-          {" "}and all{" "}
+          {" "}{t("and all")}{" "}
           <span className="font-medium text-kumo-danger">{pluralize(documents, "document")}</span>{" "}
-          inside it
-        </>
+          {t("inside it")}</>
       ) : null}
-      . This cannot be undone.
-    </>
+      {t(". This cannot be undone.")}</>
   );
 }
 
@@ -671,14 +670,14 @@ const VISIBILITY_OPTIONS = [
   {
     value: "private" as const,
     Icon: Lock,
-    title: "Only me",
-    description: "Private to your account. Only you can view and edit it.",
+    title: t("Only me"),
+    description: t("Private to your account. Only you can view and edit it."),
   },
   {
     value: "public" as const,
     Icon: Buildings,
-    title: "Everyone",
-    description: "Shared across your organization and turned on for all users.",
+    title: t("Everyone"),
+    description: t("Shared across your organization and turned on for all users."),
   },
 ];
 
@@ -686,14 +685,14 @@ const CONTENT_SOURCE_OPTIONS = [
   {
     value: "web" as const,
     Icon: PencilSimple,
-    title: "Editable documents",
-    description: "Create, edit, and delete files through the Bug OS UI.",
+    title: t("Editable documents"),
+    description: t("Create, edit, and delete files through the Bug OS UI."),
   },
   {
     value: "git" as const,
     Icon: GitBranch,
-    title: "Git mirror",
-    description: "Push content from git using repository mirroring. All changes must be made through git.",
+    title: t("Git mirror"),
+    description: t("Push content from git using repository mirroring. All changes must be made through git."),
   },
 ];
 
@@ -750,10 +749,10 @@ function CreateCollectionView({
         icon,
         source,
       );
-      toasts.add({ title: "Collection created", variant: "success" });
+      toasts.add({ title: t("Collection created"), variant: "success" });
       onCreated(metadata.id);
     } catch {
-      toasts.add({ title: "Failed to create collection", variant: "error" });
+      toasts.add({ title: t("Failed to create collection"), variant: "error" });
       setCreating(false);
     }
   };
@@ -767,14 +766,11 @@ function CreateCollectionView({
           className="press mb-3 -ml-1 inline-flex items-center gap-1 rounded-md px-1 py-0.5 text-[13px] font-medium tracking-[-0.25px] text-kumo-subtle transition-colors hover:text-kumo-default"
         >
           <CaretLeft size={14} />
-          Context &amp; Skills
-        </button>
+          {t("Context & Skills")}</button>
         <h1 className="text-2xl font-semibold tracking-tight text-kumo-default">
-          New collection
-        </h1>
+          {t("New collection")}</h1>
         <p className="mt-1 max-w-2xl text-[13px] leading-[18px] tracking-[-0.25px] text-kumo-subtle">
-          A collection of documents, skills, and other files your agents can use.
-        </p>
+          {t("A collection of documents, skills, and other files your agents can use.")}</p>
       </header>
 
       <div className="ctx-scroll min-h-0 flex-1 overflow-y-auto pb-8 pt-1">
@@ -795,8 +791,8 @@ function CreateCollectionView({
             </div>
             {supportsGitCollections && (
               <div className="ctx-rise" style={{ animationDelay: "160ms" }}>
-                <FieldLabel>Type</FieldLabel>
-                <div role="radiogroup" aria-label="Collection type" className="grid gap-2">
+                <FieldLabel>{t("Type")}</FieldLabel>
+                <div role="radiogroup" aria-label={t("Collection type")} className="grid gap-2">
                   {CONTENT_SOURCE_OPTIONS.map(({
                     value,
                     Icon,
@@ -843,8 +839,8 @@ function CreateCollectionView({
             )}
             {isAdmin && (
               <div className="ctx-rise" style={{ animationDelay: "200ms" }}>
-                <FieldLabel>Visibility</FieldLabel>
-                <div role="radiogroup" aria-label="Visibility" className="grid gap-2">
+                <FieldLabel>{t("Visibility")}</FieldLabel>
+                <div role="radiogroup" aria-label={t("Visibility")} className="grid gap-2">
                   {VISIBILITY_OPTIONS.map(({
                     value,
                     Icon,
@@ -902,8 +898,7 @@ function CreateCollectionView({
               disabled={creating}
               className="!h-9"
             >
-              Cancel
-            </WorkshopButton>
+              {t("Cancel")}</WorkshopButton>
             {/* Orange brand "create" button (page CTA, not a modal primary). The disabled overrides
                 keep the inactive state grey rather than faded orange. */}
             <WorkshopButton
@@ -913,8 +908,7 @@ function CreateCollectionView({
               disabled={!title.trim()}
               className="press !bg-kumo-brand text-white enabled:hover:!bg-kumo-brand-hover disabled:!bg-kumo-fill disabled:!text-kumo-inactive disabled:!opacity-100"
             >
-              Create collection
-            </WorkshopButton>
+              {t("Create collection")}</WorkshopButton>
           </div>
         </div>
       </div>
@@ -1016,11 +1010,9 @@ export default function ContextLibraryPage() {
       <header className="flex items-end justify-between gap-4 px-3 pb-3 pt-10">
         <div className="min-w-0">
           <h1 className="text-2xl font-semibold tracking-tight text-kumo-default">
-            Context &amp; Skills
-          </h1>
+            {t("Context & Skills")}</h1>
           <p className="mt-1 max-w-2xl text-[13px] leading-[18px] tracking-[-0.25px] text-kumo-subtle">
-            Collections of documents, skills, and other files your agents can use.
-          </p>
+            {t("Collections of documents, skills, and other files your agents can use.")}</p>
         </div>
         {enabled.length > 0 && (
           <button
@@ -1029,8 +1021,7 @@ export default function ContextLibraryPage() {
             className="press inline-flex h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-lg bg-kumo-brand px-3.5 text-[13px] font-medium tracking-[-0.25px] text-white transition-colors hover:bg-kumo-brand-hover"
           >
             <Plus size={14} weight="bold" />
-            New collection
-          </button>
+            {t("New collection")}</button>
         )}
       </header>
 
@@ -1045,7 +1036,7 @@ export default function ContextLibraryPage() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search collections…"
+              placeholder={t("Search collections…")}
               className="h-9 w-full rounded-lg border border-kumo-line bg-kumo-base pl-9 pr-4 text-[13px] tracking-[-0.25px] text-kumo-default placeholder:text-kumo-inactive transition-[border-color,box-shadow] duration-150 ease-out focus:border-kumo-ring focus:outline-none focus:ring-[3px] focus:ring-kumo-ring/15"
             />
           </div>
@@ -1062,12 +1053,12 @@ export default function ContextLibraryPage() {
             </div>
             <div>
               <p className="text-sm font-medium text-kumo-default">
-                {search ? "No collections match" : "No collections yet"}
+                {search ? t("No collections match") : t("No collections yet")}
               </p>
               <p className="mx-auto mt-1 max-w-sm text-[13px] leading-[18px] text-kumo-subtle">
                 {search
-                  ? "Try a different search term."
-                  : "Create a collection to give your agents context to work with."}
+                  ? t("Try a different search term.")
+                  : t("Create a collection to give your agents context to work with.")}
               </p>
             </div>
             {!search && (
@@ -1077,8 +1068,7 @@ export default function ContextLibraryPage() {
                 className="press mt-1 inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-lg bg-kumo-brand px-3.5 text-[13px] font-medium tracking-[-0.25px] text-white transition-colors hover:bg-kumo-brand-hover"
               >
                 <Plus size={14} weight="bold" />
-                New collection
-              </button>
+                {t("New collection")}</button>
             )}
           </div>
         ) : (
@@ -1157,8 +1147,7 @@ function CollectionOverview({
                   {metadata.title}
                 </h1>
                 <p className="mt-1 text-[13px] leading-[18px] tracking-[-0.2px] text-kumo-subtle">
-                  Context collection
-                </p>
+                  {t("Context collection")}</p>
               </div>
             </div>
             {canWrite && (
@@ -1170,60 +1159,30 @@ function CollectionOverview({
                     onClick={onRefreshSource}
                     loading={refreshingSource}
                   >
-                    Refresh
-                  </WorkshopButton>
+                    {t("Refresh")}</WorkshopButton>
                 )}
-                <KebabMenu
-                  trigger={
-                    <WorkshopIconButton
-                      aria-label="Collection options"
-                      title="Options"
-                      className="!h-9 !w-9 data-[popup-open]:bg-kumo-tint data-[popup-open]:text-kumo-default"
-                    >
-                      <DotsThree size={18} weight="bold" />
-                    </WorkshopIconButton>
-                  }
-                >
-                  <DropdownMenu.Item
-                    icon={<PencilSimple size={13} className="mr-2" />}
-                    onClick={onEditDetails}
-                    className={MENU_ITEM}
-                  >
-                    Edit details
-                  </DropdownMenu.Item>
-                  {isSynced && supportsGitCollections && (
-                    <DropdownMenu.Item
-                      icon={<Key size={13} className="mr-2" />}
-                      onClick={onManageGitTokens}
-                      className={MENU_ITEM}
-                    >
-                      Manage git tokens
-                    </DropdownMenu.Item>
-                  )}
-                  <DropdownMenu.Separator />
-                  <DropdownMenu.Item
-                    icon={<Trash size={13} className="mr-2" />}
-                    onClick={onDelete}
-                    className={`${MENU_ITEM_DANGER} text-kumo-danger`}
-                  >
-                    Delete collection
-                  </DropdownMenu.Item>
-                </KebabMenu>
+                <CollectionOptionsMenu
+                  isSynced={isSynced}
+                  supportsGitCollections={supportsGitCollections}
+                  onEditDetails={onEditDetails}
+                  onManageGitTokens={onManageGitTokens}
+                  onDelete={onDelete}
+                />
               </div>
             )}
           </div>
 
           <div className="mt-9 grid grid-cols-2 gap-x-8 gap-y-5 @xl:grid-cols-4">
-            <MetaField label="Source">
+            <MetaField label={t("Source")}>
               <span className="inline-flex items-center gap-1.5">
                 {isPublic ? <Buildings size={12} className="shrink-0" /> : <User size={12} className="shrink-0" />}
-                {isPublic ? "Your organization" : "You"}
+                {isPublic ? t("Your organization") : "You"}
               </span>
             </MetaField>
-            <MetaField label="Access">
-              {isPublic ? "Everyone (required)" : "Private to you"}
+            <MetaField label={t("Access")}>
+              {isPublic ? "Everyone (required)" : t("Private to you")}
             </MetaField>
-            <MetaField label="Documents">{metadata.documentCount}</MetaField>
+            <MetaField label={t("Documents")}>{metadata.documentCount}</MetaField>
             <MetaField label={isSynced ? "Refreshed" : "Updated"} align="right">
               {metadata.content.source === "git"
                 ? formatRelativeTime(metadata.content.lastRefreshedAt)
@@ -1235,26 +1194,22 @@ function CollectionOverview({
         {isSynced && !supportsGitCollections && (
           <section className="mt-8 rounded-xl border border-kumo-line bg-kumo-elevated/60 px-5 py-4">
             <p className="text-[13px] font-medium tracking-[-0.2px] text-kumo-default">
-              Git synchronization unavailable
-            </p>
+              {t("Git synchronization unavailable")}</p>
             <p className="mt-1 text-[13px] leading-5 tracking-[-0.2px] text-kumo-subtle">
-              Git content is read-only and shows its most recently cached version.
-            </p>
+              {t("Git content is read-only and shows its most recently cached version.")}</p>
           </section>
         )}
 
         <section className="mt-9 border-t border-kumo-line pt-8">
           <p className="mb-3 text-[13px] font-medium leading-none tracking-[-0.2px] text-kumo-subtle">
-            Description
-          </p>
+            {t("Description")}</p>
           {metadata.description ? (
             <p className="max-w-3xl text-[15px] leading-7 tracking-[-0.2px] text-kumo-default">
               {metadata.description}
             </p>
           ) : (
             <p className="text-[13px] italic leading-5 text-kumo-inactive">
-              No description yet.
-            </p>
+              {t("No description yet.")}</p>
           )}
         </section>
 
@@ -1266,16 +1221,15 @@ function CollectionOverview({
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-[13px] font-medium tracking-[-0.2px] text-kumo-default">
-                  No files in this collection
-                </p>
+                  {t("No files in this collection")}</p>
                 <p className="mt-1 max-w-xl text-[13px] leading-5 tracking-[-0.2px] text-kumo-subtle">
                   {isSynced
                     ? supportsGitCollections
-                      ? "This git mirror is empty. Mirror content from git, then refresh."
-                      : "No Git content was cached before synchronization became unavailable."
+                      ? t("This git mirror is empty. Mirror content from git, then refresh.")
+                      : t("No Git content was cached before synchronization became unavailable.")
                     : canWrite
-                    ? "Use the + in the Files panel to create or upload skills or files. Agents use the names and descriptions to decide what to read."
-                    : "This collection is empty."}
+                    ? t("Use the + in the Files panel to create or upload skills or files. Agents use the names and descriptions to decide what to read.")
+                    : t("This collection is empty.")}
                 </p>
               </div>
             </div>
@@ -1283,6 +1237,56 @@ function CollectionOverview({
         )}
       </div>
     </div>
+  );
+}
+
+function CollectionOptionsMenu({
+  isSynced,
+  supportsGitCollections,
+  onEditDetails,
+  onManageGitTokens,
+  onDelete,
+}: {
+  isSynced: boolean;
+  supportsGitCollections: boolean;
+  onEditDetails: () => void;
+  onManageGitTokens: () => void;
+  onDelete: () => void;
+}) {
+  return (
+    <KebabMenu
+      trigger={
+        <WorkshopIconButton
+          aria-label={t("Collection options")}
+          title={t("Options")}
+          className="!h-9 !w-9 data-[popup-open]:bg-kumo-tint data-[popup-open]:text-kumo-default"
+        >
+          <DotsThree size={18} weight="bold" />
+        </WorkshopIconButton>
+      }
+    >
+      <DropdownMenu.Item
+        icon={<PencilSimple size={13} className="mr-2" />}
+        onClick={onEditDetails}
+        className={MENU_ITEM}
+      >
+        {t("Edit details")}</DropdownMenu.Item>
+      {isSynced && supportsGitCollections && (
+        <DropdownMenu.Item
+          icon={<Key size={13} className="mr-2" />}
+          onClick={onManageGitTokens}
+          className={MENU_ITEM}
+        >
+          {t("Manage git tokens")}</DropdownMenu.Item>
+      )}
+      <DropdownMenu.Separator />
+      <DropdownMenu.Item
+        icon={<Trash size={13} className="mr-2" />}
+        onClick={onDelete}
+        className={`${MENU_ITEM_DANGER} text-kumo-danger`}
+      >
+        {t("Delete collection")}</DropdownMenu.Item>
+    </KebabMenu>
   );
 }
 
@@ -1367,17 +1371,17 @@ function CollectionSettingsModal({
       return;
     }
     if (!title.trim()) {
-      toasts.add({ title: "Name can't be empty", variant: "error" });
+      toasts.add({ title: t("Name can't be empty"), variant: "error" });
       return;
     }
     setSaving(true);
     try {
       await context.updateContextCollection(collectionId, updates);
-      toasts.add({ title: "Collection updated", variant: "success" });
+      toasts.add({ title: t("Collection updated"), variant: "success" });
       onUpdated();
       onClose();
     } catch {
-      toasts.add({ title: "Failed to update collection", variant: "error" });
+      toasts.add({ title: t("Failed to update collection"), variant: "error" });
       setSaving(false);
     }
   };
@@ -1386,10 +1390,10 @@ function CollectionSettingsModal({
     setDeleting(true);
     try {
       await context.deleteContextCollection(collectionId);
-      toasts.add({ title: "Collection deleted", variant: "success" });
+      toasts.add({ title: t("Collection deleted"), variant: "success" });
       onDeleted();
     } catch {
-      toasts.add({ title: "Failed to delete collection", variant: "error" });
+      toasts.add({ title: t("Failed to delete collection"), variant: "error" });
       setDeleting(false);
     }
   };
@@ -1410,7 +1414,7 @@ function CollectionSettingsModal({
       >
         {mode === "edit" ? (
           <>
-            <ModalHeader title="Edit collection" />
+            <ModalHeader title={t("Edit collection")} />
 
             <div className="space-y-5 px-4 py-5 sm:px-6">
               <div>
@@ -1428,7 +1432,7 @@ function CollectionSettingsModal({
               </div>
               {metadata.content.source === "git" && supportsGitCollections && (
                 <div>
-                  <FieldLabel>Git branch</FieldLabel>
+                  <FieldLabel>{t("Git branch")}</FieldLabel>
                   <WorkshopInput
                     value={branch}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBranch(e.target.value)}
@@ -1439,30 +1443,27 @@ function CollectionSettingsModal({
                     className="w-full"
                   />
                   <p className="mt-1 text-[12px] leading-4 text-kumo-subtle">
-                    This branch to pull from when refreshing the collection.
-                  </p>
+                    {t("This branch to pull from when refreshing the collection.")}</p>
                 </div>
               )}
             </div>
 
             <div className="flex items-center justify-end gap-2 border-t border-kumo-line px-4 py-3 sm:px-6">
               <WorkshopButton tone="secondary" className="!h-9" disabled={saving} onClick={onClose}>
-                Cancel
-              </WorkshopButton>
+                {t("Cancel")}</WorkshopButton>
               <WorkshopButton
                 tone="primary"
                 onClick={handleSave}
                 loading={saving}
                 disabled={!hasChanges || !title.trim()}
               >
-                Save
-              </WorkshopButton>
+                {t("Save")}</WorkshopButton>
             </div>
           </>
         ) : (
           <>
             <ModalHeader
-              title="Delete collection"
+              title={t("Delete collection")}
               description={
                 <DeletePermanentlyDescription
                   name={metadata.title}
@@ -1473,12 +1474,11 @@ function CollectionSettingsModal({
 
             <div className="px-4 py-5 sm:px-6">
               <FieldLabel>
-                Type{" "}
+                {t("Type")}{" "}
                 <span className="font-mono text-kumo-default">
                   {metadata.title}
                 </span>{" "}
-                to confirm
-              </FieldLabel>
+                {t("to confirm")}</FieldLabel>
               <WorkshopInput
                 value={confirmText}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -1499,8 +1499,7 @@ function CollectionSettingsModal({
                 disabled={!canDelete}
                 loading={deleting}
               >
-                Delete collection
-              </WorkshopButton>
+                {t("Delete collection")}</WorkshopButton>
             </div>
           </>
         )}
@@ -1566,7 +1565,7 @@ function GitTokenManagementModal({
       const token = await context.createContextCollectionGitToken(collectionId);
       setNewGitToken(token);
       await loadGitTokens();
-      toasts.add({ title: "Git token created", variant: "success" });
+      toasts.add({ title: t("Git token created"), variant: "success" });
     } catch (err) {
       toasts.add({ title: `Failed to create Git token: ${(err as Error).message}`, variant: "error" });
     } finally {
@@ -1579,7 +1578,7 @@ function GitTokenManagementModal({
     try {
       await context.revokeContextCollectionGitToken(collectionId, tokenId);
       await loadGitTokens();
-      toasts.add({ title: "Git token revoked", variant: "success" });
+      toasts.add({ title: t("Git token revoked"), variant: "success" });
     } catch (err) {
       toasts.add({ title: `Failed to revoke Git token: ${(err as Error).message}`, variant: "error" });
     } finally {
@@ -1608,14 +1607,13 @@ function GitTokenManagementModal({
         size="sm"
       >
         <ModalHeader
-          title="Manage git tokens"
+          title={t("Manage git tokens")}
         />
 
         <div className="space-y-3 px-4 py-5 sm:px-6">
           <div className="flex items-center justify-between gap-3">
             <p className="max-w-sm text-[12px] leading-4 text-kumo-subtle">
-              Create a token to mirror content from an external git repository.
-            </p>
+              {t("Create a token to mirror content from an external git repository.")}</p>
             <WorkshopButton
               tone="secondary"
               className="h-8!"
@@ -1623,21 +1621,19 @@ function GitTokenManagementModal({
               loading={creatingToken}
               disabled={busy}
             >
-              Create token
-            </WorkshopButton>
+              {t("Create token")}</WorkshopButton>
           </div>
 
           {newGitToken && (
             <div className="space-y-3 rounded-lg border border-green-500/30 bg-green-500/5 px-3 py-3 text-[12px] leading-5 text-kumo-subtle">
               <div>
-                <div className="font-medium text-kumo-default">Token created</div>
+                <div className="font-medium text-kumo-default">{t("Token created")}</div>
                 <p className="mt-0.5">
-                  Use these credentials to push content to your collection. The password is only shown once.
-                </p>
+                  {t("Use these credentials to push content to your collection. The password is only shown once.")}</p>
               </div>
               <div className="space-y-2">
                 <div>
-                  <FieldLabel>Remote URL</FieldLabel>
+                  <FieldLabel>{t("Remote URL")}</FieldLabel>
                   <div className="mt-1 flex gap-2">
                     <input
                       readOnly
@@ -1647,14 +1643,13 @@ function GitTokenManagementModal({
                     <WorkshopButton
                       tone="secondary"
                       className="h-8!"
-                      onClick={() => copyToClipboard(newGitToken.remote, "Remote URL copied", "Failed to copy remote URL")}
+                      onClick={() => copyToClipboard(newGitToken.remote, t("Remote URL copied"), t("Failed to copy remote URL"))}
                     >
-                      Copy
-                    </WorkshopButton>
+                      {t("Copy")}</WorkshopButton>
                   </div>
                 </div>
                 <div>
-                  <FieldLabel>Password</FieldLabel>
+                  <FieldLabel>{t("Password")}</FieldLabel>
                   <div className="mt-1 flex gap-2">
                     <input
                       readOnly
@@ -1665,29 +1660,27 @@ function GitTokenManagementModal({
                     <WorkshopButton
                       tone="secondary"
                       className="h-8!"
-                      onClick={() => copyToClipboard(newGitToken.plaintext, "Password copied", "Failed to copy password")}
+                      onClick={() => copyToClipboard(newGitToken.plaintext, t("Password copied"), t("Failed to copy password"))}
                     >
-                      Copy
-                    </WorkshopButton>
+                      {t("Copy")}</WorkshopButton>
                   </div>
                 </div>
               </div>
               <div className="border-t border-green-500/20 pt-3">
-                <div className="font-medium text-kumo-default">Configure GitLab mirroring</div>
+                <div className="font-medium text-kumo-default">{t("Configure GitLab mirroring")}</div>
                 <p className="mt-0.5">
-                  These steps are specific to GitLab. Other git providers may use different setup flows.
-                </p>
+                  {t("These steps are specific to GitLab. Other git providers may use different setup flows.")}</p>
                 <ol className="mt-2 list-decimal space-y-1.5 pl-4">
-                  <li>Open your GitLab project and go to Settings &gt; Repository &gt; Mirroring repositories</li>
-                  <li>Click "Add new" button to open setup flow</li>
-                  <li>Set Git repository URL to the remote URL above</li>
-                  <li>Set Mirror direction to Push</li>
-                  <li>Set Authentication method to Username and Password</li>
-                  <li>Set Username to "gitlab"</li>
-                  <li>Set Password to the password above</li>
-                  <li>Select Mirror specific branches and type in "{branch}"</li>
-                  <li>Click "Mirror repository" button to finish</li>
-                  <li>Click "Update now" button to trigger an initial push</li>
+                  <li>{t("Open your GitLab project and go to Settings > Repository > Mirroring repositories")}</li>
+                  <li>{t("Click \"Add new\" button to open setup flow")}</li>
+                  <li>{t("Set Git repository URL to the remote URL above")}</li>
+                  <li>{t("Set Mirror direction to Push")}</li>
+                  <li>{t("Set Authentication method to Username and Password")}</li>
+                  <li>{t("Set Username to \"gitlab\"")}</li>
+                  <li>{t("Set Password to the password above")}</li>
+                  <li>{t("Select Mirror specific branches and type in \"")}{branch}"</li>
+                  <li>{t("Click \"Mirror repository\" button to finish")}</li>
+                  <li>{t("Click \"Update now\" button to trigger an initial push")}</li>
                 </ol>
               </div>
             </div>
@@ -1695,9 +1688,9 @@ function GitTokenManagementModal({
 
           <div className="rounded-lg border border-kumo-line bg-kumo-base">
             {loadingTokens ? (
-              <div className="px-3 py-2 text-[12px] text-kumo-subtle">Loading tokens...</div>
+              <div className="px-3 py-2 text-[12px] text-kumo-subtle">{t("Loading tokens...")}</div>
             ) : gitTokens.length === 0 ? (
-              <div className="px-3 py-2 text-[12px] text-kumo-subtle">No Git tokens yet.</div>
+              <div className="px-3 py-2 text-[12px] text-kumo-subtle">{t("No Git tokens yet.")}</div>
             ) : (
               <div className="divide-y divide-kumo-line">
                 {gitTokens.map((token) => (
@@ -1708,7 +1701,7 @@ function GitTokenManagementModal({
                     <div className="min-w-0">
                       <div className="truncate font-mono text-[11px] text-kumo-default">{token.id}</div>
                       <div className="text-kumo-subtle">
-                        expires {new Date(token.expiresAt).toLocaleDateString()}
+                        {t("expires")}{new Date(token.expiresAt).toLocaleDateString()}
                       </div>
                     </div>
                     <WorkshopButton
@@ -1718,8 +1711,7 @@ function GitTokenManagementModal({
                       loading={revokingToken === token.id}
                       disabled={revokingToken !== null}
                     >
-                      Revoke
-                    </WorkshopButton>
+                      {t("Revoke")}</WorkshopButton>
                   </div>
                 ))}
               </div>
@@ -1729,8 +1721,7 @@ function GitTokenManagementModal({
 
         <div className="flex items-center justify-end gap-2 border-t border-kumo-line px-4 py-3 sm:px-6">
           <WorkshopButton tone="secondary" className="h-9!" disabled={busy} onClick={onClose}>
-            Close
-          </WorkshopButton>
+            {t("Close")}</WorkshopButton>
         </div>
       </Dialog>
     </Dialog.Root>
@@ -1882,7 +1873,7 @@ function CreateRow({ depth, ctx }: { depth: number; ctx: TreeCtx }) {
         onChange={ctx.setCreatingName}
         onCommit={ctx.commitCreate}
         onCancel={ctx.cancelCreate}
-        placeholder={isFolder ? "folder-name" : "file-name.md"}
+        placeholder={isFolder ? "folder-name" : t("file-name.md")}
       />
     </div>
   );
@@ -1975,11 +1966,10 @@ function FolderView({
                 </span>
                 {isSkill && (
                   <span
-                    title="Contains a valid Agent Skill"
+                    title={t("Contains a valid Agent Skill")}
                     className="shrink-0 text-[10px] font-medium uppercase leading-none tracking-[0.4px] text-kumo-inactive"
                   >
-                    skill
-                  </span>
+                    {t("skill")}</span>
                 )}
               </>
             )}
@@ -2002,22 +1992,19 @@ function FolderView({
                 onClick={() => ctx.startCreate(folder.path, "file")}
                 className={MENU_ITEM}
               >
-                New file
-              </DropdownMenu.Item>
+                {t("New file")}</DropdownMenu.Item>
               <DropdownMenu.Item
                 icon={<FolderPlus size={12} className="mr-2" />}
                 onClick={() => ctx.startCreate(folder.path, "folder")}
                 className={MENU_ITEM}
               >
-                New folder
-              </DropdownMenu.Item>
+                {t("New folder")}</DropdownMenu.Item>
               <DropdownMenu.Item
                 icon={<PencilSimple size={12} className="mr-2" />}
                 onClick={() => ctx.startRename(folder.path)}
                 className={MENU_ITEM}
               >
-                Rename
-              </DropdownMenu.Item>
+                {t("Rename")}</DropdownMenu.Item>
               <DropdownMenu.Separator />
               <DropdownMenu.Item
                 icon={<Trash size={12} className="mr-2" />}
@@ -2025,8 +2012,7 @@ function FolderView({
                 onClick={() => ctx.deletePath(folder.path, true)}
                 className={MENU_ITEM_DANGER}
               >
-                Delete
-              </DropdownMenu.Item>
+                {t("Delete")}</DropdownMenu.Item>
             </KebabMenu>
           )}
         </div>
@@ -2128,16 +2114,14 @@ function FileView({
             onClick={() => ctx.startRename(doc.path)}
             className={MENU_ITEM}
           >
-            Rename
-          </DropdownMenu.Item>
+            {t("Rename")}</DropdownMenu.Item>
           <DropdownMenu.Item
             icon={<Trash size={12} className="mr-2" />}
             variant="danger"
             onClick={() => ctx.deletePath(doc.path, false)}
             className={MENU_ITEM_DANGER}
           >
-            Delete
-          </DropdownMenu.Item>
+            {t("Delete")}</DropdownMenu.Item>
         </KebabMenu>
       )}
     </div>
@@ -2255,7 +2239,7 @@ function CollectionEditor({
     try {
       await context.syncContextCollectionArtifactSource(collectionId);
       await loadDocs();
-      toasts.add({ title: "Collection refreshed", variant: "success" });
+      toasts.add({ title: t("Collection refreshed"), variant: "success" });
     } catch (err) {
       toasts.add({ title: `Failed to refresh: ${(err as Error).message}`, variant: "error" });
     } finally {
@@ -2323,7 +2307,7 @@ function CollectionEditor({
       setEditOnOpenPath(filePath);
       setSelectedPath(filePath);
     } catch {
-      toasts.add({ title: "Failed to create file", variant: "error" });
+      toasts.add({ title: t("Failed to create file"), variant: "error" });
     }
   };
 
@@ -2435,7 +2419,7 @@ function CollectionEditor({
       setPendingDelete(null);
     } catch {
       toasts.add({
-        title: isDir ? "Failed to delete folder" : "Failed to delete document",
+        title: isDir ? t("Failed to delete folder") : t("Failed to delete document"),
         variant: "error",
       });
     } finally {
@@ -2518,16 +2502,13 @@ function CollectionEditor({
             className="press -ml-1 mb-4 inline-flex items-center gap-1 rounded-md px-1 py-0.5 text-[13px] font-medium tracking-[-0.25px] text-kumo-subtle transition-colors hover:text-kumo-default"
           >
             <CaretLeft size={14} />
-            Context &amp; Skills
-          </button>
+            {t("Context & Skills")}</button>
           <div className="rounded-xl border border-kumo-line bg-kumo-base px-5 py-10 text-center shadow-[0_1px_2px_rgba(20,17,16,0.03)]">
             <BookOpen size={32} className="mx-auto mb-3 text-kumo-subtle" />
             <p className="m-0 text-[15px] leading-5 font-medium tracking-[-0.25px] text-kumo-default">
-              This collection is no longer available
-            </p>
+              {t("This collection is no longer available")}</p>
             <p className="mt-1 text-[13px] leading-[18px] font-normal tracking-[-0.25px] text-kumo-subtle">
-              It may have been deleted.
-            </p>
+              {t("It may have been deleted.")}</p>
           </div>
         </div>
       </div>
@@ -2577,7 +2558,7 @@ function CollectionEditor({
           size="sm"
         >
           <ModalHeader
-            title={pendingDelete?.isDir ? "Delete folder" : "Delete document"}
+            title={pendingDelete?.isDir ? t("Delete folder") : t("Delete document")}
             description={
               <DeletePermanentlyDescription
                 name={pendingDelete ? baseName(pendingDelete.path) : ""}
@@ -2596,15 +2577,14 @@ function CollectionEditor({
               disabled={deletingPath}
               onClick={() => setPendingDelete(null)}
             >
-              Cancel
-            </WorkshopButton>
+              {t("Cancel")}</WorkshopButton>
             <WorkshopButton
               tone="danger"
               className="!h-9"
               onClick={performDeletePath}
               loading={deletingPath}
             >
-              {pendingDelete?.isDir ? "Delete folder" : "Delete document"}
+              {pendingDelete?.isDir ? t("Delete folder") : t("Delete document")}
             </WorkshopButton>
           </div>
         </Dialog>
@@ -2624,40 +2604,51 @@ function CollectionEditor({
             className="press -ml-1 inline-flex items-center gap-1 rounded-md px-1 py-0.5 text-[13px] font-medium tracking-[-0.25px] text-kumo-subtle transition-colors hover:text-kumo-default"
           >
             <CaretLeft size={14} />
-            Context &amp; Skills
-          </button>
+            {t("Context & Skills")}</button>
         </div>
           {metadata && (
             <div className="px-3 py-2.5">
               {/* The collection root doubles as a nav target back to the overview, and sits active
                   when nothing is selected. */}
-              <button
-                onClick={() => setSelectedPath(null)}
-                title="Collection overview"
-                aria-current={selectedPath ? undefined : "page"}
-                className={`flex w-full transform-none items-center gap-2.5 rounded-lg px-1.5 py-1.5 text-left transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-ring/30 active:scale-100 ${
-                  selectedPath ? "hover:bg-kumo-tint" : "bg-kumo-recessed"
-                }`}
+              <div
+                className={`flex items-center rounded-lg ${selectedPath ? "hover:bg-kumo-tint" : "bg-kumo-recessed"}`}
               >
-                <CollectionIconTile icon={metadata.icon} size="sm" />
-                <span className="min-w-0 flex-1 truncate text-[15px] font-semibold leading-5 tracking-[-0.25px] text-kumo-default">
-                  {metadata.title}
-                </span>
-              </button>
+                <button
+                  onClick={() => setSelectedPath(null)}
+                  title={t("Collection overview")}
+                  aria-current={selectedPath ? undefined : "page"}
+                  className="flex min-w-0 flex-1 transform-none items-center gap-2.5 rounded-lg px-1.5 py-1.5 text-left transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-kumo-ring/30 active:scale-100"
+                >
+                  <CollectionIconTile icon={metadata.icon} size="sm" />
+                  <span className="min-w-0 flex-1 truncate text-[15px] font-semibold leading-5 tracking-[-0.25px] text-kumo-default">
+                    {metadata.title}
+                  </span>
+                </button>
+                {canWrite && (
+                  <div className="pr-1 sm:hidden">
+                    <CollectionOptionsMenu
+                      isSynced={metadata.content.source === "git"}
+                      supportsGitCollections={supportsGitCollections}
+                      onEditDetails={() => openSettings("edit")}
+                      onManageGitTokens={() => setGitTokensOpen(true)}
+                      onDelete={() => openSettings("delete")}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
           <div className="flex h-8 shrink-0 items-center justify-between gap-2 px-5">
             <span className="text-[11px] font-medium uppercase tracking-[0.08em] text-kumo-inactive">
-              Files
-            </span>
+              {t("Files")}</span>
             {canEditDocuments && (
               <>
             <KebabMenu
               trigger={
                 <WorkshopIconButton
-                  aria-label="Add"
-                  title="Add file or folder"
+                  aria-label={t("Add")}
+                  title={t("Add file or folder")}
                   className="!h-6 !w-6 text-kumo-subtle hover:bg-kumo-tint hover:text-kumo-default data-[popup-open]:bg-kumo-tint data-[popup-open]:text-kumo-default"
                 >
                   <Plus size={14} weight="bold" />
@@ -2669,30 +2660,26 @@ function CollectionEditor({
                 onClick={() => startCreate("", "file")}
                 className={MENU_ITEM}
               >
-                New file
-              </DropdownMenu.Item>
+                {t("New file")}</DropdownMenu.Item>
               <DropdownMenu.Item
                 icon={<FolderPlus size={13} className="mr-2" />}
                 onClick={() => startCreate("", "folder")}
                 className={MENU_ITEM}
               >
-                New folder
-              </DropdownMenu.Item>
+                {t("New folder")}</DropdownMenu.Item>
               <DropdownMenu.Separator />
               <DropdownMenu.Item
                 icon={<UploadSimple size={13} className="mr-2" />}
                 onClick={() => fileInputRef.current?.click()}
                 className={MENU_ITEM}
               >
-                Upload files
-              </DropdownMenu.Item>
+                {t("Upload files")}</DropdownMenu.Item>
               <DropdownMenu.Item
                 icon={<Folder size={13} className="mr-2" />}
                 onClick={() => dirInputRef.current?.click()}
                 className={MENU_ITEM}
               >
-                Upload folder
-              </DropdownMenu.Item>
+                {t("Upload folder")}</DropdownMenu.Item>
             </KebabMenu>
             <input
               ref={fileInputRef}
@@ -2721,14 +2708,14 @@ function CollectionEditor({
           </div>
           <div className="ctx-scroll min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-3.5 pb-6 pt-0.5">
             {loading ? (
-              <p className="px-2 py-2 text-[13px] text-kumo-subtle">Loading…</p>
+              <p className="px-2 py-2 text-[13px] text-kumo-subtle">{t("Loading…")}</p>
             ) : docs.length === 0 && pendingFolders.size === 0 && !creating ? (
               <p className="px-2 py-2 text-[12px] leading-5 text-kumo-inactive">
                 {metadata?.content.source === "git"
                   ? supportsGitCollections
-                    ? "No files yet. Mirror content from git, then refresh."
-                    : "No Git content was cached before synchronization became unavailable."
-                  : canWrite ? "No files yet. Use + to create or upload skills or files." : "No files yet."}
+                    ? t("No files yet. Mirror content from git, then refresh.")
+                    : t("No Git content was cached before synchronization became unavailable.")
+                  : canWrite ? t("No files yet. Use + to create or upload skills or files.") : t("No files yet.")}
               </p>
             ) : (
               <FolderView folder={tree} depth={0} ctx={ctx} />
@@ -2746,8 +2733,7 @@ function CollectionEditor({
                 className="flex sm:hidden flex-shrink-0 items-center gap-1 border-b border-kumo-line px-4 py-2.5 text-[13px] text-kumo-subtle transition-colors hover:text-kumo-default"
               >
                 <CaretLeft size={14} />
-                Files
-              </button>
+                {t("Files")}</button>
               <div className="min-h-0 min-w-0 flex-1 overflow-hidden">
                 <DocumentEditor
                   key={selectedPath}
@@ -2870,7 +2856,7 @@ function MarkdownPreview({
               {content}
             </ReactMarkdown>
           ) : (
-            <p className="italic text-kumo-inactive">This document is empty.</p>
+            <p className="italic text-kumo-inactive">{t("This document is empty.")}</p>
           )}
         </div>
       </div>
@@ -2920,9 +2906,7 @@ function renderDocumentBody({
   if (!isText) {
     return (
       <div className="p-4 text-[13px] text-kumo-subtle">
-        Binary document ({contentType}, {Math.round((body.length * 3) / 4 / 1024)} KB). Use Replace to
-        update it.
-      </div>
+        {t("Binary document (")}{contentType}, {Math.round((body.length * 3) / 4 / 1024)} {t("KB). Use Replace to update it.")}</div>
     );
   }
 
@@ -3064,10 +3048,10 @@ function DocumentEditor({
       };
       setSkillName(saved?.skillName ?? null);
       setDirty(false);
-      toasts.add({ title: "Saved", variant: "success" });
+      toasts.add({ title: t("Saved"), variant: "success" });
       onChanged();
     } catch {
-      toasts.add({ title: "Failed to save", variant: "error" });
+      toasts.add({ title: t("Failed to save"), variant: "error" });
     } finally {
       setSaving(false);
     }
@@ -3081,7 +3065,7 @@ function DocumentEditor({
       return;
     }
     if (trimmed.includes("/")) {
-      toasts.add({ title: "File name can't contain '/'", variant: "error" });
+      toasts.add({ title: t("File name can't contain '/'"), variant: "error" });
       setFilename(baseName(path));
       return;
     }
@@ -3109,8 +3093,7 @@ function DocumentEditor({
   if (loading) {
     return (
       <div className="flex h-full items-center justify-center text-sm text-kumo-subtle">
-        Loading…
-      </div>
+        {t("Loading…")}</div>
     );
   }
 
@@ -3133,8 +3116,8 @@ function DocumentEditor({
               else if (e.key === "Escape") { setFilename(baseName(path)); e.currentTarget.blur(); }
             }}
             className="w-full bg-transparent text-[18px] font-semibold leading-6 tracking-[-0.4px] text-kumo-default focus:outline-none"
-            placeholder="file-name.md"
-            title="File name — edit to rename (the extension sets the type)"
+            placeholder={t("file-name.md")}
+            title={t("File name — edit to rename (the extension sets the type)")}
           />
 
         </div>
@@ -3149,13 +3132,11 @@ function DocumentEditor({
             loading={saving}
             disabled={!dirty}
           >
-            Save
-          </WorkshopButton>
+            {t("Save")}</WorkshopButton>
         )}
         {!readOnly && !isText && mode === "edit" && (
           <label className="press flex h-8 cursor-pointer items-center gap-1 rounded-lg border border-kumo-line px-2.5 text-[12px] font-medium text-kumo-subtle transition-colors hover:bg-kumo-tint hover:text-kumo-default">
-            <UploadSimple size={14} /> Replace
-            <input
+            <UploadSimple size={14} /> {t("Replace")}<input
               type="file"
               className="hidden"
               onChange={(e) => {
@@ -3169,8 +3150,8 @@ function DocumentEditor({
         {showModeToggle && (
           <div className="inline-flex h-8 shrink-0 items-center rounded-lg border border-kumo-line bg-kumo-fill p-0.5">
             {[
-              { m: "read" as const, Icon: Eye, label: "View" },
-              { m: "edit" as const, Icon: readOnly ? Code : PencilSimple, label: readOnly ? "Source" : "Edit" },
+              { m: "read" as const, Icon: Eye, label: t("View") },
+              { m: "edit" as const, Icon: readOnly ? Code : PencilSimple, label: readOnly ? t("Source") : "Edit" },
             ].map(({ m, Icon, label }) => (
               <button
                 key={m}
@@ -3196,7 +3177,7 @@ function DocumentEditor({
           <span className="mx-0.5 h-5 w-px shrink-0 bg-kumo-line" aria-hidden="true" />
           <button
             onClick={onRequestDelete}
-            title="Delete document"
+            title={t("Delete document")}
             className="press flex h-8 w-8 items-center justify-center rounded-md text-kumo-subtle transition-colors hover:bg-kumo-tint hover:text-kumo-danger"
           >
             <Trash size={16} />
@@ -3209,23 +3190,21 @@ function DocumentEditor({
           declare their own description show it read-only; otherwise the author writes it. */}
       <div className="border-b border-kumo-line px-6 py-3.5 sm:px-10">
         <label className="mb-1.5 block text-[12px] font-medium tracking-[-0.15px] text-kumo-subtle">
-          When to use this
-          {skillName && (
+          {t("When to use this")}{skillName && (
             <span className="ml-1 font-mono text-kumo-brand">· /{skillName}</span>
           )}
           {extractedDescription !== null && (
             <span
               className="ml-1 text-kumo-inactive"
-              title="Defined in this file; edit it in the document below."
+              title={t("Defined in this file; edit it in the document below.")}
             >
-              · from file
-            </span>
+              {t("· from file")}</span>
           )}
         </label>
         {extractedDescription !== null ? (
           <p className="max-w-3xl text-[14px] leading-5 tracking-[-0.2px] text-kumo-default">
             {effectiveDescription || (
-              <span className="italic text-kumo-inactive">No description in this file yet.</span>
+              <span className="italic text-kumo-inactive">{t("No description in this file yet.")}</span>
             )}
           </p>
         ) : descriptionIsEditable ? (
@@ -3236,13 +3215,13 @@ function DocumentEditor({
               setDescription(nextDescription);
               setDirty(documentIsDirty(nextDescription, body));
             }}
-            placeholder="Describe what this document contains and when an agent should use it…"
+            placeholder={t("Describe what this document contains and when an agent should use it…")}
             className="w-full bg-transparent text-[14px] leading-5 tracking-[-0.2px] text-kumo-default placeholder:text-kumo-inactive focus:outline-none"
           />
         ) : (
           <p className="max-w-3xl text-[14px] leading-5 tracking-[-0.2px] text-kumo-default">
             {description || (
-              <span className="italic text-kumo-inactive">No description yet.</span>
+              <span className="italic text-kumo-inactive">{t("No description yet.")}</span>
             )}
           </p>
         )}
@@ -3280,34 +3259,34 @@ const monoFont =
 // Token colors matching the Workshop's Monaco theme, including its subdued markdown (headers use
 // keyword purple, URLs green, the rest default).
 const gadgetsHighlightStyleLight = HighlightStyle.define([
-  { tag: t.comment, color: "#a39990", fontStyle: "italic" },
+  { tag: highlightTags.comment, color: "#a39990", fontStyle: "italic" },
   {
     tag: [
-      t.keyword,
-      t.moduleKeyword,
-      t.controlKeyword,
-      t.operatorKeyword,
-      t.definitionKeyword,
-      t.modifier,
-      t.self,
+      highlightTags.keyword,
+      highlightTags.moduleKeyword,
+      highlightTags.controlKeyword,
+      highlightTags.operatorKeyword,
+      highlightTags.definitionKeyword,
+      highlightTags.modifier,
+      highlightTags.self,
     ],
     color: "#8e3aa6",
   },
-  { tag: t.operator, color: "#6b6157" },
-  { tag: [t.string, t.special(t.string), t.regexp, t.escape], color: "#4d8a44" },
-  { tag: [t.number, t.bool, t.null, t.atom], color: "#b56a1f" },
-  { tag: [t.typeName, t.className, t.namespace], color: "#b56a1f" },
-  { tag: [t.function(t.variableName), t.function(t.propertyName)], color: "#3a72c9" },
-  { tag: [t.variableName, t.propertyName], color: "#1f1d1a" },
-  { tag: t.constant(t.variableName), color: "#b56a1f" },
-  { tag: t.standard(t.variableName), color: "#3a72c9" },
-  { tag: [t.punctuation, t.separator, t.bracket, t.paren, t.brace], color: "#6b6157" },
-  { tag: t.tagName, color: "#c14438" },
-  { tag: t.attributeName, color: "#b56a1f" },
-  { tag: t.attributeValue, color: "#4d8a44" },
+  { tag: highlightTags.operator, color: "#6b6157" },
+  { tag: [highlightTags.string, highlightTags.special(highlightTags.string), highlightTags.regexp, highlightTags.escape], color: "#4d8a44" },
+  { tag: [highlightTags.number, highlightTags.bool, highlightTags.null, highlightTags.atom], color: "#b56a1f" },
+  { tag: [highlightTags.typeName, highlightTags.className, highlightTags.namespace], color: "#b56a1f" },
+  { tag: [highlightTags.function(highlightTags.variableName), highlightTags.function(highlightTags.propertyName)], color: "#3a72c9" },
+  { tag: [highlightTags.variableName, highlightTags.propertyName], color: "#1f1d1a" },
+  { tag: highlightTags.constant(highlightTags.variableName), color: "#b56a1f" },
+  { tag: highlightTags.standard(highlightTags.variableName), color: "#3a72c9" },
+  { tag: [highlightTags.punctuation, highlightTags.separator, highlightTags.bracket, highlightTags.paren, highlightTags.brace], color: "#6b6157" },
+  { tag: highlightTags.tagName, color: "#c14438" },
+  { tag: highlightTags.attributeName, color: "#b56a1f" },
+  { tag: highlightTags.attributeValue, color: "#4d8a44" },
   // Markdown: match Monaco (headers = keyword purple, URLs green, the rest default).
-  { tag: t.heading, color: "#8e3aa6" },
-  { tag: t.url, color: "#4d8a44" },
+  { tag: highlightTags.heading, color: "#8e3aa6" },
+  { tag: highlightTags.url, color: "#4d8a44" },
 ]);
 
 const gadgetsEditorThemeLight = EditorView.theme(
@@ -3349,33 +3328,33 @@ const gadgetsEditorThemeLight = EditorView.theme(
 );
 
 const gadgetsHighlightStyleDark = HighlightStyle.define([
-  { tag: t.comment, color: "#858396", fontStyle: "italic" },
+  { tag: highlightTags.comment, color: "#858396", fontStyle: "italic" },
   {
     tag: [
-      t.keyword,
-      t.moduleKeyword,
-      t.controlKeyword,
-      t.operatorKeyword,
-      t.definitionKeyword,
-      t.modifier,
-      t.self,
+      highlightTags.keyword,
+      highlightTags.moduleKeyword,
+      highlightTags.controlKeyword,
+      highlightTags.operatorKeyword,
+      highlightTags.definitionKeyword,
+      highlightTags.modifier,
+      highlightTags.self,
     ],
     color: "#d8b4fe",
   },
-  { tag: t.operator, color: "#b9b5c8" },
-  { tag: [t.string, t.special(t.string), t.regexp, t.escape], color: "#86efac" },
-  { tag: [t.number, t.bool, t.null, t.atom], color: "#fbbf24" },
-  { tag: [t.typeName, t.className, t.namespace], color: "#fbbf24" },
-  { tag: [t.function(t.variableName), t.function(t.propertyName)], color: "#93c5fd" },
-  { tag: [t.variableName, t.propertyName], color: "#e8e6f0" },
-  { tag: t.constant(t.variableName), color: "#fbbf24" },
-  { tag: t.standard(t.variableName), color: "#93c5fd" },
-  { tag: [t.punctuation, t.separator, t.bracket, t.paren, t.brace], color: "#b9b5c8" },
-  { tag: t.tagName, color: "#fca5a5" },
-  { tag: t.attributeName, color: "#fbbf24" },
-  { tag: t.attributeValue, color: "#86efac" },
-  { tag: t.heading, color: "#d8b4fe" },
-  { tag: t.url, color: "#86efac" },
+  { tag: highlightTags.operator, color: "#b9b5c8" },
+  { tag: [highlightTags.string, highlightTags.special(highlightTags.string), highlightTags.regexp, highlightTags.escape], color: "#86efac" },
+  { tag: [highlightTags.number, highlightTags.bool, highlightTags.null, highlightTags.atom], color: "#fbbf24" },
+  { tag: [highlightTags.typeName, highlightTags.className, highlightTags.namespace], color: "#fbbf24" },
+  { tag: [highlightTags.function(highlightTags.variableName), highlightTags.function(highlightTags.propertyName)], color: "#93c5fd" },
+  { tag: [highlightTags.variableName, highlightTags.propertyName], color: "#e8e6f0" },
+  { tag: highlightTags.constant(highlightTags.variableName), color: "#fbbf24" },
+  { tag: highlightTags.standard(highlightTags.variableName), color: "#93c5fd" },
+  { tag: [highlightTags.punctuation, highlightTags.separator, highlightTags.bracket, highlightTags.paren, highlightTags.brace], color: "#b9b5c8" },
+  { tag: highlightTags.tagName, color: "#fca5a5" },
+  { tag: highlightTags.attributeName, color: "#fbbf24" },
+  { tag: highlightTags.attributeValue, color: "#86efac" },
+  { tag: highlightTags.heading, color: "#d8b4fe" },
+  { tag: highlightTags.url, color: "#86efac" },
 ]);
 
 const gadgetsEditorThemeDark = EditorView.theme(
