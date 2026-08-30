@@ -1,8 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync, readdirSync, statSync } from "node:fs";
 import { describe, it } from "node:test";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
 
 import {
   getConfiguredAdmins,

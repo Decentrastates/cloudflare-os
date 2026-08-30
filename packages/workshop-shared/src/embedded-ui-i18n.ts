@@ -2,9 +2,11 @@ import { translateSystemMetadata, type UiLocale } from '@gadgets/workshop-shared
 
 type Catalog = Readonly<Record<string, string>>
 
-// Static copy used only by sandboxed Gatekeeper applications and configurator chrome. Values
-// returned by Gatekeepers (resource names, option titles, errors, and other account data) are never
-// passed through this catalog: backend metadata remains localized by the backend RPC boundary.
+/**
+ * Static copy used only by sandboxed Gatekeeper applications and configurator chrome. Values
+ * returned by Gatekeepers (resource names, option titles, errors, and other account data) are never
+ * passed through this catalog: backend metadata remains localized by the backend RPC boundary.
+ */
 export const embeddedUiZhCN: Catalog = {
   'Access': '访问权限', 'Active': '启用', 'Add': '添加', 'Add file or folder': '添加文件或文件夹',
   'Allowed tools': '允许的工具', 'All calendars visible to me': '我可见的所有日历', 'All Gmail': '全部 Gmail 邮件',

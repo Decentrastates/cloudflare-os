@@ -88,7 +88,7 @@ function auditSource(sourceText, filename, catalogKeys = null) {
     }
 
     if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name)
-      && /Error$/.test(node.name.text) && node.initializer) {
+      && node.name.text.endsWith('Error') && node.initializer) {
       function errorValue(child) {
         if (ts.isCallExpression(child) && child.expression.getText(source) === 't') return
         if (ts.isStringLiteral(child) || ts.isNoSubstitutionTemplateLiteral(child)) {
